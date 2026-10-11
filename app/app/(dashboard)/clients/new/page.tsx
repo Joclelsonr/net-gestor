@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -83,7 +84,7 @@ export default function Page() {
     return true;
   }
 
-  async function locateAddress(): Promise<void> {
+  async function locateAddress() {
     if (!f.city)
       return void toast.add({
         type: "error",
@@ -125,7 +126,7 @@ export default function Page() {
     }
   }
 
-  async function lookupCep(cep: string): Promise<void> {
+  async function lookupCep(cep: string) {
     const d = onlyDigits(cep);
     if (d.length !== 8) return;
     try {
@@ -148,6 +149,7 @@ export default function Page() {
       }
     } catch {
       /* ignora falha de rede */
+      console.error("Falha ao buscar CEP");
     }
   }
 
@@ -190,7 +192,7 @@ export default function Page() {
             <Label>Tipo</Label>
             <Select
               value={f.person_type}
-              onValueChange={(v: string) => set("person_type", v)}
+              onValueChange={(v: any) => set("person_type", v)}
             >
               <SelectTrigger className="w-44">
                 <SelectValue />
@@ -309,7 +311,7 @@ export default function Page() {
             <Label>Status</Label>
             <Select
               value={f.status}
-              onValueChange={(v: string) => set("status", v)}
+              onValueChange={(v: any) => set("status", v)}
             >
               <SelectTrigger className="w-44">
                 <SelectValue />
@@ -333,9 +335,11 @@ export default function Page() {
         </Section>
 
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" asChild>
-            <Link href="/clients">Cancelar</Link>
-          </Button>
+          <Link href="/clients">
+            <Button type="button" variant="outline">
+              Cancelar
+            </Button>
+          </Link>
           <Button type="submit" disabled={saving}>
             {saving ? "Salvando..." : "Salvar cliente"}
           </Button>

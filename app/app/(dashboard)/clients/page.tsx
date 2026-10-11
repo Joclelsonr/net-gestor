@@ -10,9 +10,18 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { formatDocument, formatPhone } from "@/lib/br-docs";
 
-type ClientProps = { data: any[] };
-
-export default function Page({ data }: ClientProps) {
+export default function Page() {
+  const data = [
+    {
+      id: 1,
+      code: 1,
+      name: "João da Silva",
+      document: "12345678901",
+      phone: "11999999999",
+      city: "São Paulo",
+      status: "ativo",
+    },
+  ];
   const [q, setQ] = useState("");
 
   const term = q.toLowerCase().replace(/\D/g, "") || q.toLowerCase();
@@ -43,13 +52,13 @@ export default function Page({ data }: ClientProps) {
           </p>
         </div>
 
-        <Button asChild className="bg-blue-400 hover:bg-blue-500 h-10">
-          <Link href="/clients/new">
+        <Link href="/clients/new">
+          <Button className="bg-blue-400 hover:bg-blue-500 h-10">
             <div className="flex items-center gap-2">
               <Plus className="h-4 w-4" /> Novo cliente
             </div>
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       <div className="relative mt-6">

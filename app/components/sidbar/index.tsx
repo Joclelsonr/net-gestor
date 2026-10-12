@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 
 import {
@@ -14,10 +12,10 @@ import {
 
 export function Sidebar() {
   const soon = [
-    { label: "Planos", icon: Gauge },
-    { label: "Contratos", icon: FileText },
-    { label: "Financeiro", icon: Receipt },
-    { label: "Suporte", icon: Wrench },
+    { id: 1, label: "Planos", icon: Gauge },
+    { id: 2, label: "Contratos", icon: FileText },
+    { id: 3, label: "Financeiro", icon: Receipt },
+    { id: 4, label: "Suporte", icon: Wrench },
   ];
 
   return (
@@ -30,7 +28,7 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 px-3">
         <Link
-          href={"/clients"}
+          href="/clients"
           className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted hover:bg-blue-500"
           // activeProps={{
           //   className: "bg-sidebar-accent text-sidebar-accent-foreground",
@@ -40,7 +38,7 @@ export function Sidebar() {
         </Link>
         {soon.map((s) => (
           <div
-            key={s.label}
+            key={s.id}
             className="flex items-center gap-3 px-3 py-2 text-sm opacity-40 text-muted"
           >
             <s.icon className="h-4 w-4" /> {s.label}

@@ -13,7 +13,7 @@ import { formatDocument, formatPhone } from "@/lib/br-docs";
 export default function Page() {
   const data = [
     {
-      id: 1,
+      id: "1",
       code: 1,
       name: "João da Silva",
       document: "12345678901",

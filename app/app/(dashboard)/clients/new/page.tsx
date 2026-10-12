@@ -2,29 +2,30 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 
+import {
+  formatCep,
+  onlyDigits,
+  formatPhone,
+  formatDocument,
+} from "@/lib/br-docs";
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+} from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+// import { LocationMap } from "./components/location-map";
 import { ArrowLeft, LocateFixed, MapPin } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  formatCep,
-  formatDocument,
-  formatPhone,
-  onlyDigits,
-} from "@/lib/br-docs";
-import { LocationMap } from "./components/location-map";
 
 const empty = {
   person_type: "PF",
@@ -47,6 +48,14 @@ const empty = {
 };
 type Form = typeof empty;
 type Key = keyof Form;
+
+const LocationMap = dynamic(
+  () => import("./components/location-map").then((mod) => mod.LocationMap),
+  {
+    ssr: false,
+    loading: () => <div className="h-80 w-full rounded-md border bg-muted" />,
+  },
+);
 
 export default function Page() {
   const [f, setF] = useState<Form>(empty);
@@ -292,17 +301,12 @@ export default function Page() {
                 </Button>
               </div>
             </div>
-            {/* <ClientOnly fallback={<div className="h-80 rounded-md border bg-muted" />}> */}
-            <Suspense
-              fallback={<div className="h-80 rounded-md border bg-muted" />}
-            >
-              <LocationMap
-                lat={coords?.lat ?? null}
-                lng={coords?.lng ?? null}
-                onChange={(lat, lng) => setCoords({ lat, lng })}
-              />
-            </Suspense>
-            {/* </ClientOnly> */}
+
+            <LocationMap
+              lat={coords?.lat ?? null}
+              lng={coords?.lng ?? null}
+              onChange={(lat, lng) => setCoords({ lat, lng })}
+            />
           </div>
         </Section>
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { Wifi } from "lucide-react";
 
 import { FormLogin } from "./components/form-login";

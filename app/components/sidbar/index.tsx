@@ -21,10 +21,10 @@ export function Sidebar() {
   return (
     <aside className="hidden w-60 shrink-0 flex-col bg-blue-950 text-sidebar-foreground md:flex">
       <div className="flex items-center gap-2 px-5 py-5 font-display text-lg font-semibold text-muted">
-        <span className="grid h-8 w-8 place-items-center rounded-md bg-blue-400 text-muted">
+        <span className="grid h-8 w-8 place-items-center rounded-md bg-blue-500 text-muted">
           <Wifi className="h-4 w-4" />
         </span>
-        NetGestor
+        Norte Telecom
       </div>
       <nav className="flex-1 space-y-1 px-3">
         <Link

@@ -1,6 +1,9 @@
+"use client";
+
 import { useState } from "react";
 
 import { Label } from "@/components/ui/label";
+import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -13,9 +16,7 @@ export function FormLogin() {
     password: "",
   });
 
-  const { name, email, password } = data;
-
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     console.log("submit", data);
@@ -30,46 +31,47 @@ export function FormLogin() {
         <p className="mt-1 text-sm text-muted-foreground">
           {mode === "login"
             ? "Acesse o painel da equipe."
-            : "O primeiro cadastro vira administrador."}
+            : "Crie sua conta para acessar o painel."}
         </p>
       </div>
 
       {mode === "signup" && (
-        <div className="space-y-2">
+        <Field>
           <Label htmlFor="name">Nome</Label>
           <Input
             required
             id="name"
-            value={name}
+            value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
           />
-        </div>
+        </Field>
       )}
 
-      <div className="space-y-2">
+      <Field className="space-y-2">
         <Label htmlFor="email">E-mail</Label>
         <Input
           required
           id="email"
           type="email"
-          value={email}
+          value={data.email}
           onChange={(e) => setData({ ...data, email: e.target.value })}
         />
-      </div>
-      <div className="space-y-2">
+      </Field>
+      <Field className="space-y-2">
         <Label htmlFor="password">Senha</Label>
         <Input
           required
           id="password"
           type="password"
           minLength={8}
-          value={password}
+          value={data.password}
           onChange={(e) => setData({ ...data, password: e.target.value })}
         />
-      </div>
+      </Field>
+
       <Button
         type="submit"
-        className="w-full h-10 bg-blue-400 *:hover:bg-blue-500"
+        className="w-full h-10 bg-blue-500 hover:bg-blue-600"
         disabled={loading}
       >
         {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}

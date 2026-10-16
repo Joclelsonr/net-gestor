@@ -1,23 +1,33 @@
+"use client";
+
 import Link from "next/link";
 
-import {
-  Wifi,
-  Gauge,
-  Users,
-  LogOut,
-  Wrench,
-  Receipt,
-  FileText,
-} from "lucide-react";
+import { useState } from "react";
+import { MENU } from "@/constants/menu";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { Wifi, Users, LogOut } from "lucide-react";
 
 export function Sidebar() {
-  const soon = [
-    { id: 1, label: "Planos", icon: Gauge },
-    { id: 2, label: "Contratos", icon: FileText },
-    { id: 3, label: "Financeiro", icon: Receipt },
-    { id: 4, label: "Suporte", icon: Wrench },
-  ];
+  const route = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { data } = authClient.useSession();
 
+  async function signOut() {
+    setLoading(true);
+
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          route.push("/login");
+        },
+        onError: (ctx) => {
+          console.log(ctx);
+          setLoading(false);
+        },
+      },
+    });
+  }
   return (
     <aside className="hidden w-60 shrink-0 flex-col bg-blue-950 text-sidebar-foreground md:flex">
       <div className="flex items-center gap-2 px-5 py-5 font-display text-lg font-semibold text-muted">
@@ -36,7 +46,7 @@ export function Sidebar() {
         >
           <Users className="h-4 w-4" /> Clientes
         </Link>
-        {soon.map((s) => (
+        {MENU.map((s) => (
           <div
             key={s.id}
             className="flex items-center gap-3 px-3 py-2 text-sm opacity-40 text-muted"
@@ -50,10 +60,22 @@ export function Sidebar() {
       </nav>
       <div className="border-t border-sidebar-border p-3">
         <p className="truncate px-3 text-xs opacity-50 text-muted">
-          {"jocleelson.159@hotmail.com"}
+          {data?.user?.email}
         </p>
-        <button className="mt-2 flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted hover:bg-blue-500">
-          <LogOut className="h-4 w-4" /> Sair
+
+        <button
+          onClick={signOut}
+          className="mt-2 flex w-full items-center gap-3 rounded-md hover:cursor-pointer px-3 py-2 text-sm text-muted hover:bg-blue-500"
+        >
+          {loading ? (
+            <>
+              <LogOut className="h-4 w-4" /> Saindo...
+            </>
+          ) : (
+            <>
+              <LogOut className="h-4 w-4" /> Sair
+            </>
+          )}
         </button>
       </div>
     </aside>

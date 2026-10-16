@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "@/components/ui/toast";
+import { authClient } from "@/lib/auth-client";
 
 import { Label } from "@/components/ui/label";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 export function FormLogin() {
+  const router = useRouter();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -16,10 +21,60 @@ export function FormLogin() {
     password: "",
   });
 
-  function submit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    console.log("submit", data);
+
+    if (mode === "signup") {
+      setLoading(true);
+      const result = await authClient.signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+      if (result.error) {
+        if (result.error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+          toast.add({
+            type: "error",
+            description: "Já existe um usuário com esse e-mail",
+          });
+          setData({ email: "", name: "", password: "" });
+          return setLoading(false);
+        }
+        toast.add({ type: "error", description: "Erro ao criar conta" });
+        return setLoading(false);
+      }
+      setLoading(false);
+      setMode("login");
+      setData({ email: "", name: "", password: "" });
+    } else {
+      await authClient.signIn.email(
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          onRequest: (ctx) => {
+            setLoading(true);
+          },
+          onSuccess: (ctx) => {
+            setLoading(false);
+            router.push("/clients");
+          },
+          onError: (ctx) => {
+            if (ctx.error.code === "INVALID_EMAIL_OR_PASSWORD") {
+              toast.add({
+                type: "error",
+                description: "E-mail ou senha inválidos",
+              });
+              return setLoading(false);
+            }
+            toast.add({ type: "error", description: "Erro ao fazer login" });
+            setLoading(false);
+          },
+        },
+      );
+      setData({ email: "", name: "", password: "" });
+    }
   }
 
   return (
@@ -41,6 +96,7 @@ export function FormLogin() {
           <Input
             required
             id="name"
+            autoComplete="off"
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
           />
@@ -74,7 +130,7 @@ export function FormLogin() {
         className="w-full h-10 bg-blue-500 hover:bg-blue-600"
         disabled={loading}
       >
-        {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
+        {loading ? <Spinner /> : mode === "login" ? "Entrar" : "Criar conta"}
       </Button>
       <button
         type="button"

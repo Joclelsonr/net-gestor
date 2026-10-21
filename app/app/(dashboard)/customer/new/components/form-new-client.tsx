@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { LocateFixed } from "lucide-react";
+import { LocateFixed, SaveCheck, X } from "lucide-react";
 
 import {
   formatCep,
@@ -27,17 +27,20 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { empty } from "../schema";
 import { InputPhoto } from "./input-photo";
+import { customerSchema } from "../schema";
 import { toast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 
-import type { Form, Key } from "../schema";
+import { createCustomer } from "../actions";
+
+import type { CustomerType, Key } from "../schema";
 
 const LocationMap = dynamic(
   () => import("./location-map").then((mod) => mod.LocationMap),
@@ -49,14 +52,14 @@ const LocationMap = dynamic(
 
 export function FormNewClient() {
   const [open, setOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<Form>(empty);
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState<CustomerType>(customerSchema);
   const [photo, setPhoto] = useState<File | null>(null);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null,
   );
 
-  const pf = form.person_type === "PF";
+  const personType = form.personType === "PF";
   const set = (k: Key, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
   async function lookupCep(cep: string) {
@@ -103,10 +106,31 @@ export function FormNewClient() {
     );
   }
 
-  function submit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSaving(true);
+    setLoading(true);
     console.log("submit", form, coords, photo);
+
+    const result = await createCustomer(
+      {
+        ...form,
+        lat: String(coords?.lat),
+        lng: String(coords?.lng),
+      },
+      photo ?? undefined,
+    );
+
+    if (result.success) {
+      toast.add({ type: "success", description: result.message });
+      setLoading(false);
+      setForm(customerSchema);
+    } else {
+      toast.add({
+        type: "error",
+        description: result.message,
+      });
+      setLoading(false);
+    }
   }
 
   return (
@@ -115,8 +139,8 @@ export function FormNewClient() {
         <Field>
           <Label>Tipo</Label>
           <Select
-            value={form.person_type}
-            onValueChange={(v: any) => set("person_type", v)}
+            value={form.personType}
+            onValueChange={(v: any) => set("personType", v)}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -128,37 +152,39 @@ export function FormNewClient() {
           </Select>
         </Field>
         <Field>
-          <Label htmlFor="name">{pf ? "Nome completo" : "Razão social"}</Label>
+          <Label htmlFor="name">
+            {personType ? "Nome completo" : "Razão social"}
+          </Label>
           <Input
             required
             id="name"
+            autoComplete="off"
             value={form.name}
             placeholder="Nome do cliente"
-            autoComplete="off"
             onChange={(e) => set("name", e.target.value)}
           />
         </Field>
         <Field>
-          <Label htmlFor="document">{pf ? "CPF" : "CNPJ"}</Label>
+          <Label htmlFor="cpf">{personType ? "CPF" : "CNPJ"}</Label>
           <Input
             required
-            id="document"
+            id="cpf"
             autoComplete="off"
-            placeholder={pf ? "000.000.000-00" : "00.000.000/0000-00"}
-            value={formatDocument(form.document)}
-            onChange={(e) => set("document", e.target.value)}
+            placeholder={personType ? "000.000.000-00" : "00.000.000/0000-00"}
+            value={formatDocument(form.cpf)}
+            onChange={(e) => set("cpf", e.target.value)}
           />
         </Field>
         <Field>
-          <Label htmlFor="rg_ie">{pf ? "RG" : "Inscrição estadual"}</Label>
+          <Label htmlFor="rg">{personType ? "RG" : "Inscrição estadual"}</Label>
           <Input
-            id="rg_ie"
+            id="rg"
             autoComplete="off"
-            value={form.rg_ie}
-            onChange={(e) => set("rg_ie", e.target.value)}
+            value={form.rg}
+            onChange={(e) => set("rg", e.target.value)}
           />
         </Field>
-        {pf && (
+        {personType && (
           <Field className="mx-auto w-full">
             <Label htmlFor="birth_date">Nascimento</Label>
             <Popover open={open} onOpenChange={setOpen}>
@@ -169,8 +195,8 @@ export function FormNewClient() {
                     variant="outline"
                     className="justify-start font-normal"
                   >
-                    {form.birth_date ? (
-                      format(form.birth_date, "PPP", { locale: ptBR })
+                    {form.birthDate ? (
+                      format(form.birthDate, "PPP", { locale: ptBR })
                     ) : (
                       <span>dd/mm/aaaa</span>
                     )}
@@ -186,13 +212,13 @@ export function FormNewClient() {
                   captionLayout="dropdown"
                   locale={ptBR}
                   selected={
-                    form.birth_date ? new Date(form.birth_date) : undefined
+                    form.birthDate ? new Date(form.birthDate) : undefined
                   }
                   defaultMonth={
-                    form.birth_date ? new Date(form.birth_date) : undefined
+                    form.birthDate ? new Date(form.birthDate) : undefined
                   }
                   onSelect={(date) => {
-                    set("birth_date", date ? date.toISOString() : "");
+                    set("birthDate", date ? date.toISOString() : "");
                     setOpen(false);
                   }}
                 />
@@ -208,6 +234,7 @@ export function FormNewClient() {
           <Input
             id="email"
             type="email"
+            autoComplete="off"
             placeholder="e-mail@exemplo.com"
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
@@ -217,6 +244,7 @@ export function FormNewClient() {
           <Label htmlFor="phone">Telefone</Label>
           <Input
             id="phone"
+            autoComplete="off"
             placeholder="(99) 99999-9999"
             value={formatPhone(form.phone)}
             onChange={(e) => set("phone", e.target.value)}
@@ -225,8 +253,9 @@ export function FormNewClient() {
         <Field>
           <Label htmlFor="whatsapp">WhatsApp</Label>
           <Input
-            id="whatsapp"
             required
+            id="whatsapp"
+            autoComplete="off"
             placeholder="(99) 99999-9999"
             value={formatPhone(form.whatsapp)}
             onChange={(e) => set("whatsapp", e.target.value)}
@@ -250,6 +279,7 @@ export function FormNewClient() {
           <Label htmlFor="street">Logradouro</Label>
           <Input
             id="street"
+            autoComplete="off"
             value={form.street}
             placeholder="Rua, Avenida, Travessa..."
             onChange={(e) => set("street", e.target.value)}
@@ -259,6 +289,7 @@ export function FormNewClient() {
           <Label htmlFor="number">Número</Label>
           <Input
             id="number"
+            autoComplete="off"
             value={form.number}
             placeholder="169"
             onChange={(e) => set("number", e.target.value)}
@@ -268,6 +299,7 @@ export function FormNewClient() {
           <Label htmlFor="complement">Complemento</Label>
           <Input
             id="complement"
+            autoComplete="off"
             value={form.complement}
             placeholder="Apartamento, Bloco, Casa..."
             onChange={(e) => set("complement", e.target.value)}
@@ -277,6 +309,7 @@ export function FormNewClient() {
           <Label htmlFor="district">Bairro</Label>
           <Input
             id="district"
+            autoComplete="off"
             value={form.district}
             placeholder="Vila, Jardim, Centro..."
             onChange={(e) => set("district", e.target.value)}
@@ -286,6 +319,7 @@ export function FormNewClient() {
           <Label htmlFor="city">Cidade</Label>
           <Input
             id="city"
+            autoComplete="off"
             value={form.city}
             placeholder="Tucuruí"
             onChange={(e) => set("city", e.target.value)}
@@ -295,6 +329,7 @@ export function FormNewClient() {
           <Label htmlFor="state">UF</Label>
           <Input
             id="state"
+            autoComplete="off"
             maxLength={2}
             value={form.state}
             placeholder="PA"
@@ -347,10 +382,10 @@ export function FormNewClient() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="aguardando">Aguardando</SelectItem>
-              <SelectItem value="ativo">Ativo</SelectItem>
-              <SelectItem value="suspenso">Suspenso</SelectItem>
-              <SelectItem value="cancelado">Cancelado</SelectItem>
+              <SelectItem value="WAITING">Aguardando</SelectItem>
+              <SelectItem value="ACTIVE">Ativo</SelectItem>
+              <SelectItem value="SUSPENDED">Suspenso</SelectItem>
+              <SelectItem value="CANCELED">Cancelado</SelectItem>
             </SelectContent>
           </Select>
         </Field>
@@ -364,19 +399,21 @@ export function FormNewClient() {
         </Field>
       </Section>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-between md:justify-end gap-3">
         <Link href="/clients">
           <Button type="button" variant="outline" size="lg">
+            <X />
             Cancelar
           </Button>
         </Link>
         <Button
           size="lg"
           type="submit"
-          disabled={saving}
+          disabled={loading}
           className="bg-blue-500 hover:bg-blue-600 "
         >
-          {saving ? "Salvando..." : "Salvar cliente"}
+          {loading ? <Spinner /> : <SaveCheck />}
+          {loading ? "Salvando..." : "Salvar cliente"}
         </Button>
       </div>
     </form>

@@ -1,9 +1,9 @@
-export const empty = {
-  person_type: "PF",
+export const customerSchema = {
+  personType: "PF",
   name: "",
-  document: "",
-  rg_ie: "",
-  birth_date: "",
+  cpf: "",
+  rg: "",
+  birthDate: "",
 
   email: "",
   phone: "",
@@ -19,9 +19,9 @@ export const empty = {
   lat: "",
   lng: "",
 
-  status: "aguardando",
+  status: "",
   notes: "",
 };
 
-export type Form = typeof empty;
-export type Key = keyof Form;
+export type CustomerType = typeof customerSchema;
+export type Key = keyof CustomerType;

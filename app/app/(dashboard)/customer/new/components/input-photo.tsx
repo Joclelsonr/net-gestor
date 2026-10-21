@@ -60,6 +60,8 @@ export function InputPhoto({
         <div className="relative inline-block">
           <Image
             src={url}
+            width={150}
+            height={150}
             alt="Foto da residência"
             className="max-h-64 rounded-md border object-cover"
           />

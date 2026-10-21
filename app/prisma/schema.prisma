@@ -74,3 +74,54 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model Customer {
+  id         String         @id @default(uuid())
+  name       String
+  cpf        String         @unique
+  rg         String?
+  personType String
+  birthDate  DateTime
+  email      String?
+  phone      String?
+  whatsapp   String
+  notes      String?
+  status     CustomerStatus @default(WAITING)
+  userId     String?
+  dueDate    DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  address Address[]
+
+  @@map("customer")
+}
+
+model Address {
+  id             String   @id @default(uuid())
+  cep            String?
+  street         String? // rua 
+  number         String? // número
+  complement     String? // complemento
+  district       String? // bairro
+  city           String? // cidade
+  state          String? // estado
+  lat            String? // latitude
+  lng            String? // longetude
+  googleDriveId  String? // ID foto no google drive
+  googleDriveUrl String? // link de vizualização
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("address")
+}
+
+enum CustomerStatus {
+  ACTIVE // ativo
+  WAITING // aguardando
+  SUSPENDED // suspenso
+  CANCELED // cancelado
+}

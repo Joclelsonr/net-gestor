@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isAuthenticated && pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/clients", request.url));
+    return NextResponse.redirect(new URL("/customer", request.url));
   }
 
   return NextResponse.next();

@@ -6,12 +6,12 @@ import { useState } from "react";
 import { MENU } from "@/constants/menu";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Wifi, Users, LogOut } from "lucide-react";
+import { Wifi, Users, LogOut, Gauge } from "lucide-react";
 
 export function Sidebar() {
   const route = useRouter();
-  const [loading, setLoading] = useState(false);
   const { data } = authClient.useSession();
+  const [loading, setLoading] = useState(false);
 
   async function signOut() {
     setLoading(true);
@@ -38,13 +38,22 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 space-y-1 px-3">
         <Link
-          href="/clients"
+          href="/customer"
           className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted hover:bg-blue-500"
           // activeProps={{
           //   className: "bg-sidebar-accent text-sidebar-accent-foreground",
           // }}
         >
           <Users className="h-4 w-4" /> Clientes
+        </Link>
+        <Link
+          href="/plan"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted hover:bg-blue-500"
+          // activeProps={{
+          //   className: "bg-sidebar-accent text-sidebar-accent-foreground",
+          // }}
+        >
+          <Gauge className="h-4 w-4" /> Planos
         </Link>
         {MENU.map((s) => (
           <div

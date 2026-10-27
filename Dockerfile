@@ -8,8 +8,8 @@ RUN apt-get update \
 
 EXPOSE 3000
 
-# CMD ["sleep", "infinity"]
+CMD ["sleep", "infinity"]
 
-CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
+# CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
 
 # CMD [ "tail", "-f", "/dev/null" ]

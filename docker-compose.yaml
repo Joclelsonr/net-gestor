@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   app:
@@ -9,6 +9,8 @@ services:
     working_dir: /app
     ports:
       - "3000:3000"
+    env_file:
+      - ./app/.env
     volumes:
       - type: bind
         source: ./app
@@ -17,9 +19,9 @@ services:
         source: node_modules
         target: /app/node_modules
     environment:
-      NODE_ENV: development
+      # NODE_ENV: development
       WATCHPACK_POLLING: "true"
-      DATABASE_URL: postgres://postgres:postgres@db:5432/netgestor
+      # DATABASE_URL: postgres://postgres:postgres@db:5432/netgestor
     command: npm run dev -- --hostname 0.0.0.0 --webpack
     init: true
     restart: unless-stopped

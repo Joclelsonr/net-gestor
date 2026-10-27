@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -37,6 +36,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { statusTraduction } from "@/constants/status-styled";
 
 import { createCustomer } from "../actions";
 
@@ -140,7 +140,7 @@ export function FormNewClient() {
           <Label>Tipo</Label>
           <Select
             value={form.personType}
-            onValueChange={(v: any) => set("personType", v)}
+            onValueChange={(v) => set("personType", v ?? '')}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -376,10 +376,12 @@ export function FormNewClient() {
           <Label>Status</Label>
           <Select
             value={form.status}
-            onValueChange={(v: any) => set("status", v)}
+            onValueChange={(value) => set("status", value ?? '')}
           >
             <SelectTrigger className="w-full md:w-44">
-              <SelectValue />
+              <SelectValue placeholder="Selecione o status">
+                {statusTraduction[form.status]}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="WAITING">Aguardando</SelectItem>

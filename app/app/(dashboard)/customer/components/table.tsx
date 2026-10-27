@@ -1,17 +1,20 @@
 "use client";
 
 import { use, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { InputSearch } from "./input-serach";
 import { formatDocument, formatPhone } from "@/lib/br-docs";
 
 import type { Customer } from "@/generated/prisma/client";
+import { statusStyle, statusTraduction } from "@/constants/status-styled";
 
 type TableProps = { data: Promise<Customer[]> };
 
 export function Table({ data }: TableProps) {
   const allCustomer = use(data);
+  const router = useRouter();
   const [search, setSearch] = useState("");
 
   const term = search.toLowerCase().replace(/\D/g, "") || search.toLowerCase();
@@ -21,20 +24,6 @@ export function Table({ data }: TableProps) {
       client.name.toLowerCase().includes(search.toLowerCase()) ||
       client.cpf.includes(term),
   );
-
-  const statusStyle: Record<string, string> = {
-    ACTIVE: "bg-success/15 text-success border-success/30",
-    WAITING: "bg-secondary text-secondary-foreground",
-    SUSPENDED: "bg-warning/20 text-foreground border-warning/40",
-    CANCELED: "bg-destructive/10 text-destructive border-destructive/30",
-  };
-
-  const statusTraduction: Record<string, string> = {
-    ACTIVE: "ATIVO",
-    WAITING: "AGUARDANDO",
-    SUSPENDED: "SUSPENSO",
-    CANCELED: "CANCELADO",
-  };
 
   return (
     <>
@@ -65,7 +54,11 @@ export function Table({ data }: TableProps) {
               </tr>
             )}
             {rows.map((client) => (
-              <tr key={client.id} className="border-t hover:bg-muted/50">
+              <tr
+                key={client.id}
+                onClick={() => router.push(`/customer/${client.id}`)}
+                className="border-t hover:bg-muted/50 cursor-pointer"
+              >
                 <td className="px-4 py-3 font-medium">{client.name}</td>
                 <td className="hidden px-4 py-3 font-mono text-xs md:table-cell">
                   {formatDocument(client.cpf)}
@@ -78,7 +71,9 @@ export function Table({ data }: TableProps) {
                 </td>
                 <td className="hidden px-4 py-3 lg:table-cell">
                   <span>
-                    {new Date(client.createdAt).toLocaleDateString("pt-BR")}
+                    {new Date(client.createdAt).toLocaleDateString("pt-BR", {
+                      timeZone: "America/Sao_Paulo",
+                    })}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-center">

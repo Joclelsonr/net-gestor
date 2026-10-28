@@ -108,12 +108,14 @@ export async function createPppoe(
 }
 
 export async function revealPassword(customerId: string) {
-  const { hashPassword } = await prisma.pppoe.findUnique({
+  const  pppoeHashPassword = await prisma.pppoe.findUnique({
     where: { customerId },
     select: { hashPassword: true },
   });
 
-  const decrypt = decryptPassword(hashPassword);
+  if(!pppoeHashPassword) return
+
+  const decrypt = decryptPassword(pppoeHashPassword?.hashPassword);
 
   return decrypt;
 }

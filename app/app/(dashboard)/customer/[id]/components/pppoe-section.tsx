@@ -13,7 +13,7 @@ import { createPppoe, revealPassword } from "../actions";
 
 import type { Pppoe } from "@/generated/prisma/client";
 
-type PppoeProps = { pppoe: Pppoe; customerId: string };
+type PppoeProps = { pppoe: Pppoe | null; customerId: string };
 
 export function PppoeSection({ pppoe, customerId }: PppoeProps) {
   const [username, setUsername] = useState<string | null>(null);
@@ -81,7 +81,7 @@ export function PppoeSection({ pppoe, customerId }: PppoeProps) {
             className="bg-white"
             autoComplete="off"
             maxLength={128}
-            value={username ?? pppoe.username}
+            value={username ?? pppoe?.username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>

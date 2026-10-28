@@ -169,7 +169,7 @@ export function FormNewClient() {
           <Input
             required
             id="cpf"
-            type="number"
+            inputMode="numeric"
             autoComplete="off"
             placeholder={personType ? "000.000.000-00" : "00.000.000/0000-00"}
             value={formatDocument(form.cpf)}
@@ -180,6 +180,7 @@ export function FormNewClient() {
           <Label htmlFor="rg">{personType ? "RG" : "Inscrição estadual"}</Label>
           <Input
             id="rg"
+            inputMode="numeric"
             autoComplete="off"
             value={form.rg}
             onChange={(e) => set("rg", e.target.value)}
@@ -209,6 +210,7 @@ export function FormNewClient() {
                 className="w-auto overflow-hidden p-0"
               >
                 <Calendar
+                  required
                   mode="single"
                   captionLayout="dropdown"
                   locale={ptBR}
@@ -245,7 +247,7 @@ export function FormNewClient() {
           <Label htmlFor="phone">Telefone</Label>
           <Input
             id="phone"
-            type="number"
+            inputMode="numeric"
             autoComplete="off"
             placeholder="(99) 99999-9999"
             value={formatPhone(form.phone)}
@@ -256,8 +258,8 @@ export function FormNewClient() {
           <Label htmlFor="whatsapp">WhatsApp</Label>
           <Input
             required
-            type="number"
             id="whatsapp"
+            inputMode="numeric"
             autoComplete="off"
             placeholder="(99) 99999-9999"
             value={formatPhone(form.whatsapp)}
@@ -271,7 +273,7 @@ export function FormNewClient() {
           <Label htmlFor="cep">CEP</Label>
           <Input
             id="cep"
-            type="number"
+            inputMode="numeric"
             autoComplete="off"
             placeholder="00000-000"
             value={formatCep(form.cep)}
@@ -293,7 +295,7 @@ export function FormNewClient() {
           <Label htmlFor="number">Número</Label>
           <Input
             id="number"
-            type="number"
+            inputMode="numeric"
             autoComplete="off"
             value={form.number}
             placeholder="169"

@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { nextDueDate } from "@/lib/billing";
 import { getSession } from "@/utils/get-session";
+import { decryptPassword, encryptPassword } from "@/lib/crypto";
 
 import type {
   Plans,
@@ -47,13 +48,6 @@ export async function addPlan({
   const { user } = await getSession();
   if (!user) return redirect("/login");
 
-  console.log({
-    planId,
-    customerId,
-    startDate,
-    dueDate,
-  });
-
   try {
     const plan = await prisma.plans.findUnique({ where: { id: planId } });
     if (!plan) {
@@ -78,4 +72,48 @@ export async function addPlan({
     console.log(error);
     return { success: false, message: "Algo deu errado, tente novamente" };
   }
+}
+
+export async function getPppooe(customerId: string) {
+  const pppoe = await prisma.pppoe.findUnique({
+    where: { customerId },
+  });
+
+  return pppoe;
+}
+
+export async function createPppoe(
+  customerId: string,
+  username: string,
+  password: string,
+) {
+  const hashPassword = encryptPassword(password);
+
+  try {
+    await prisma.pppoe.create({
+      data: {
+        customerId,
+        username,
+        hashPassword,
+      },
+    });
+
+    revalidatePath(`/customer/${customerId}`);
+
+    return { success: true, message: "Usuário e senha criado com sucesso!" };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Algo deu errado, tente novamente" };
+  }
+}
+
+export async function revealPassword(customerId: string) {
+  const { hashPassword } = await prisma.pppoe.findUnique({
+    where: { customerId },
+    select: { hashPassword: true },
+  });
+
+  const decrypt = decryptPassword(hashPassword);
+
+  return decrypt;
 }

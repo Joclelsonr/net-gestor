@@ -6,19 +6,21 @@ import { ArrowLeft } from "lucide-react";
 import { FormPlan } from "./form-plan";
 import { Badge } from "@/components/ui/badge";
 import { PhotoSection } from "./photo-section";
+import { PppoeSection } from "./pppoe-section";
 import { ContactSection } from "./contact-section";
 
 import { statusStyle, statusTraduction } from "@/constants/status-styled";
 
-import { getCustomerById, getPlans } from "../actions";
+import { getCustomerById, getPlans, getPppooe } from "../actions";
 
 type CustomerDetailsProps = { params: Promise<{ id: string }> };
 
 export async function CustomerDetails({ params }: CustomerDetailsProps) {
   const { id } = await params;
 
-  const [customer, plans] = await Promise.all([
+  const [customer, pppoe, plans] = await Promise.all([
     getCustomerById(id),
+    getPppooe(id),
     getPlans(),
   ]);
 
@@ -47,7 +49,9 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
         <PhotoSection customer={customer} />
       </div>
 
-      <FormPlan plans={plans} customerId={customer.id} />
+      <PppoeSection pppoe={pppoe} customerId={customer?.id} />
+
+      <FormPlan plans={plans} customerId={customer?.id} />
 
       <div className="mt-4 space-y-3">
         {customer?.subscriptions && !customer?.subscriptions.length && (

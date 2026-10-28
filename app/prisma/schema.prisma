@@ -13,15 +13,16 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String   @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions Session[]
+  accounts Account[]
 
   @@unique([email])
   @@map("user")
@@ -48,7 +49,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -58,6 +58,8 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -92,6 +94,7 @@ model Customer {
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
+  pppoes        Pppoe?
   address       Address[]
   subscriptions Subscriptions[]
 
@@ -99,7 +102,7 @@ model Customer {
 }
 
 model Address {
-  id             String   @id @default(uuid())
+  id             String  @id @default(uuid())
   cep            String?
   street         String? // rua 
   number         String? // número
@@ -111,8 +114,9 @@ model Address {
   lng            String? // longetude
   googleDriveId  String? // ID foto no google drive
   googleDriveUrl String? // link de vizualização
-  customerId     String
-  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -152,6 +156,20 @@ model Subscriptions {
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
+}
+
+model Pppoe {
+  id           String   @id @default(uuid())
+  username     String
+  hashPassword String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId])
+  @@map("pppoe")
 }
 
 enum CustomerStatus {

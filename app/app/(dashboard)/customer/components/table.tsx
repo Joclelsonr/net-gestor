@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { InputSearch } from "./input-serach";
 import { formatDocument, formatPhone } from "@/lib/br-docs";
+import { statusStyle, statusTraduction } from "@/constants/status-styled";
 
 import type { Customer } from "@/generated/prisma/client";
-import { statusStyle, statusTraduction } from "@/constants/status-styled";
 
 type TableProps = { data: Promise<Customer[]> };
 
@@ -89,6 +89,9 @@ export function Table({ data }: TableProps) {
           </tbody>
         </table>
       </div>
+      <p className="text-sm text-muted-foreground mt-3">
+        {allCustomer?.length ?? 0} cadastrados
+      </p>
     </>
   );
 }

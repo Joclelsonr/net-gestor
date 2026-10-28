@@ -78,7 +78,6 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
               value={form.planId}
               onValueChange={(value) => {
                 // const plan = plans.find((x) => x.id === value);
-
                 setForm({ ...form, planId: value ?? "" });
               }}
             >
@@ -141,15 +140,17 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
               id="start"
               type="date"
               required
-              value={form.StartDate}
-              onChange={(e) => setForm({ ...form, StartDate: e.target.value })}
+              value={form.startDate}
+              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
             />
           </div>
           <div className="space-y-2">
             <Label>Fidelidade</Label>
             <Select
               value={form.loyalty_months}
-              onValueChange={(v) => setForm({ ...form, loyalty_months: v ?? '' })}
+              onValueChange={(v) =>
+                setForm({ ...form, loyalty_months: v ?? "" })
+              }
             >
               <SelectTrigger>
                 <SelectValue />

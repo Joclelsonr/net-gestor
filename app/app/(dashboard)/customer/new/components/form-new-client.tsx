@@ -109,7 +109,6 @@ export function FormNewClient() {
   async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    console.log("submit", form, coords, photo);
 
     const result = await createCustomer(
       {
@@ -124,6 +123,7 @@ export function FormNewClient() {
       toast.add({ type: "success", description: result.message });
       setLoading(false);
       setForm(customerSchema);
+      setPhoto(null);
     } else {
       toast.add({
         type: "error",
@@ -140,7 +140,7 @@ export function FormNewClient() {
           <Label>Tipo</Label>
           <Select
             value={form.personType}
-            onValueChange={(v) => set("personType", v ?? '')}
+            onValueChange={(v) => set("personType", v ?? "")}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -169,6 +169,7 @@ export function FormNewClient() {
           <Input
             required
             id="cpf"
+            type="number"
             autoComplete="off"
             placeholder={personType ? "000.000.000-00" : "00.000.000/0000-00"}
             value={formatDocument(form.cpf)}
@@ -244,6 +245,7 @@ export function FormNewClient() {
           <Label htmlFor="phone">Telefone</Label>
           <Input
             id="phone"
+            type="number"
             autoComplete="off"
             placeholder="(99) 99999-9999"
             value={formatPhone(form.phone)}
@@ -254,6 +256,7 @@ export function FormNewClient() {
           <Label htmlFor="whatsapp">WhatsApp</Label>
           <Input
             required
+            type="number"
             id="whatsapp"
             autoComplete="off"
             placeholder="(99) 99999-9999"
@@ -268,6 +271,7 @@ export function FormNewClient() {
           <Label htmlFor="cep">CEP</Label>
           <Input
             id="cep"
+            type="number"
             autoComplete="off"
             placeholder="00000-000"
             value={formatCep(form.cep)}
@@ -289,6 +293,7 @@ export function FormNewClient() {
           <Label htmlFor="number">Número</Label>
           <Input
             id="number"
+            type="number"
             autoComplete="off"
             value={form.number}
             placeholder="169"
@@ -333,7 +338,7 @@ export function FormNewClient() {
             maxLength={2}
             value={form.state}
             placeholder="PA"
-            onChange={(e) => set("state", e.target.value)}
+            onChange={(e) => set("state", e.target.value.toUpperCase())}
           />
         </Field>
 
@@ -376,7 +381,7 @@ export function FormNewClient() {
           <Label>Status</Label>
           <Select
             value={form.status}
-            onValueChange={(value) => set("status", value ?? '')}
+            onValueChange={(value) => set("status", value ?? "")}
           >
             <SelectTrigger className="w-full md:w-44">
               <SelectValue placeholder="Selecione o status">

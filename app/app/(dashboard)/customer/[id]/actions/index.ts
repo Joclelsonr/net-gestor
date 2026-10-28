@@ -16,9 +16,7 @@ import type { TSubscription } from "../schema";
 
 export async function getCustomerById(
   id: string,
-): Promise<
-  Customer & { address: Address[], subscriptions: Subscriptions[] }
-> {
+): Promise<Customer & { address: Address[]; subscriptions: Subscriptions[] }> {
   const { user } = await getSession();
   if (!user) return redirect("/login");
 
@@ -43,11 +41,18 @@ export async function getPlans(): Promise<Plans[]> {
 export async function addPlan({
   planId,
   customerId,
-  StartDate,
+  startDate,
   dueDate,
 }: TSubscription) {
   const { user } = await getSession();
   if (!user) return redirect("/login");
+
+  console.log({
+    planId,
+    customerId,
+    startDate,
+    dueDate,
+  });
 
   try {
     const plan = await prisma.plans.findUnique({ where: { id: planId } });
@@ -60,7 +65,7 @@ export async function addPlan({
         customerId,
         planId: plan.id,
         price: plan.price,
-        startDate: new Date(StartDate),
+        startDate: new Date(startDate),
         dueDate: nextDueDate(dueDate),
         createdBy: user.id,
       },

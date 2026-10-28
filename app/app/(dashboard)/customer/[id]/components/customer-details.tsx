@@ -17,7 +17,7 @@ type CustomerDetailsProps = { params: Promise<{ id: string }> };
 export async function CustomerDetails({ params }: CustomerDetailsProps) {
   const { id } = await params;
 
-  const [customer, plans] =  await Promise.all([
+  const [customer, plans] = await Promise.all([
     getCustomerById(id),
     getPlans(),
   ]);
@@ -59,6 +59,7 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
           const planActive = plans.find(
             (plan) => plan.id === subscription.planId,
           );
+
           return (
             <div
               key={subscription.id}
@@ -72,8 +73,14 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
                   </span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Desde {new Date(subscription.createdAt).toLocaleDateString()}{" "}
-                  · Vence todo dia {new Date(subscription.dueDate).getDay()}
+                  Desde{" "}
+                  {new Date(subscription.createdAt).toLocaleDateString(
+                    "pt-BR",
+                    {
+                      timeZone: "America/Sao_Paulo",
+                    },
+                  )}{" "}
+                  · Vence todo dia {new Date(subscription.dueDate).getDate()}
                 </p>
               </div>
               <div className="text-right">
@@ -83,7 +90,7 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
                 {subscription.status === "ACTIVE" && (
                   <p className="text-xs text-muted-foreground">
                     Próx. venc.:{" "}
-                    {new Date(subscription.dueDate).toLocaleDateString()}
+                    {new Date(subscription.dueDate).toLocaleDateString("pt-BR")}
                   </p>
                 )}
               </div>

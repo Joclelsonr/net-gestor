@@ -4,6 +4,7 @@ import { Table } from "./components/table";
 import { ButtonNewCustomer } from "./components/button-new-customer";
 
 import { getClients } from "./actions";
+import { SkeletonTable } from "./components/skeleton-table";
 
 export default async function Page() {
   const data = getClients();
@@ -16,15 +17,12 @@ export default async function Page() {
             Cadastro
           </p>
           <h1 className="text-3xl font-semibold">Clientes</h1>
-          <p className="text-sm text-muted-foreground">
-            {/* {data?.length ?? 0} cadastrados */}
-          </p>
         </div>
 
         <ButtonNewCustomer />
       </div>
 
-      <Suspense fallback={<div className="mt-10">Carregando clientes...</div>}>
+      <Suspense fallback={<SkeletonTable />}>
         <Table data={data} />
       </Suspense>
     </div>

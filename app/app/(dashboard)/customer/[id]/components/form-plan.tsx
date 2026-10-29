@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { useState } from "react";
 import { brl } from "@/lib/billing";
-import { SaveCheck, Plus, X } from "lucide-react";
+import { SaveCheck, Plus, X, Gauge } from "lucide-react";
 
 import {
   Select,
@@ -55,10 +55,14 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
 
   return (
     <>
-      <div className="mt-8 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Planos contratados</h2>
+      <div className="mt-8 border-t flex pt-6 items-center justify-between">
+        <h2 className="text-xl font-semibold flex gap-2">
+          <Gauge />
+          Planos contratados
+        </h2>
         <Button
           size="lg"
+          disabled={plans.length > 0}
           onClick={() => setOpen((o) => !o)}
           className="bg-blue-500 hover:bg-blue-600"
         >

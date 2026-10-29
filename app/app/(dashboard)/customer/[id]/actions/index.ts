@@ -6,12 +6,14 @@ import { revalidatePath } from "next/cache";
 import { nextDueDate } from "@/lib/billing";
 import { getSession } from "@/utils/get-session";
 import { decryptPassword, encryptPassword } from "@/lib/crypto";
+import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 
-import type {
-  Plans,
-  Address,
-  Customer,
-  Subscriptions,
+import {
+  type Plans,
+  type Pppoe,
+  type Address,
+  type Customer,
+  type Subscriptions,
 } from "@/generated/prisma/client";
 import type { TSubscription } from "../schema";
 
@@ -74,10 +76,12 @@ export async function addPlan({
   }
 }
 
-export async function getPppooe(customerId: string) {
+export async function getPppooe(customerId: string): Promise<Pppoe> {
   const pppoe = await prisma.pppoe.findUnique({
     where: { customerId },
   });
+
+  if (!pppoe) return notFound();
 
   return pppoe;
 }
@@ -108,14 +112,86 @@ export async function createPppoe(
 }
 
 export async function revealPassword(customerId: string) {
-  const  pppoeHashPassword = await prisma.pppoe.findUnique({
+  const pppoeHashPassword = await prisma.pppoe.findUnique({
     where: { customerId },
     select: { hashPassword: true },
   });
 
-  if(!pppoeHashPassword) return
+  if (!pppoeHashPassword) return;
 
   const decrypt = decryptPassword(pppoeHashPassword?.hashPassword);
 
   return decrypt;
+}
+
+export async function createPayment(
+  customerId: string,
+  description: string,
+  amount: string,
+  dueDate: Date,
+) {
+  try {
+    const subscription = await prisma.subscriptions.findFirst({
+      where: { customerId },
+      select: { id: true },
+    });
+    if (!subscription) {
+      return { success: false, message: "O cliente precisa ter um plano!" };
+    }
+
+    await prisma.payments.create({
+      data: {
+        customerId,
+        subscriptionId: subscription?.id,
+        description,
+        amount: Number(amount),
+        dueDate: new Date(dueDate),
+      },
+    });
+
+    revalidatePath(`/customer/${customerId}`);
+
+    return { success: true, message: "Pagamento criado com sucesso!" };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Algo deu errado, tente novamente" };
+  }
+}
+
+export async function getPayments(customerId: string) {
+  const subscription = await prisma.subscriptions.findFirst({
+    where: { customerId },
+    select: { id: true },
+  });
+
+  const payments = await prisma.payments.findMany({
+    where: { subscriptionId: subscription?.id },
+  });
+
+  return payments;
+}
+
+export async function updatePayment(
+  paymentId: string,
+  status: PaymentStatus,
+  paidDate?: Date,
+  paymentMethod?: string,
+) {
+  try {
+    await prisma.payments.update({
+      where: { id: paymentId },
+      data: {
+        paidDate: paidDate ? paidDate : null,
+        status: status,
+        paymentMethod: paymentMethod as PaymentMethod,
+      },
+    });
+
+    revalidatePath(`/customer`);
+
+    return { success: true, message: "Pagamento atualizado com sucesso!" };
+  } catch (error) {
+    console.log(error);
+    return { success: false, message: "Algo deu errado, tente novamente" };
+  }
 }

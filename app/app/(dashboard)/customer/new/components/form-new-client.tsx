@@ -409,7 +409,7 @@ export function FormNewClient() {
       </Section>
 
       <div className="flex justify-between md:justify-end gap-3">
-        <Link href="/clients">
+        <Link href="/customer">
           <Button type="button" variant="outline" size="lg">
             <X />
             Cancelar

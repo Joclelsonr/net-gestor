@@ -3,13 +3,16 @@
 import Link from "next/link";
 
 import { useState } from "react";
-import { MENU } from "@/constants/menu";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Wifi, Users, LogOut, Gauge } from "lucide-react";
+import { Wifi, LogOut } from "lucide-react";
+import { Spinner } from "../ui/spinner";
+
+import { MENU } from "@/constants/menu";
 
 export function Sidebar() {
   const route = useRouter();
+  const pathname = usePathname();
   const { data } = authClient.useSession();
   const [loading, setLoading] = useState(false);
 
@@ -28,61 +31,49 @@ export function Sidebar() {
       },
     });
   }
+
   return (
     <aside className="hidden w-60 shrink-0 flex-col bg-blue-950 text-sidebar-foreground md:flex">
+      {/* LOGO */}
       <div className="flex items-center gap-2 px-5 py-5 font-display text-lg font-semibold text-muted">
         <span className="grid h-8 w-8 place-items-center rounded-md bg-blue-500 text-muted">
           <Wifi className="h-4 w-4" />
         </span>
         Norte Telecom
       </div>
+      {/* MENU */}
       <nav className="flex-1 space-y-1 px-3">
-        <Link
-          href="/customer"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted hover:bg-blue-500"
-          // activeProps={{
-          //   className: "bg-sidebar-accent text-sidebar-accent-foreground",
-          // }}
-        >
-          <Users className="h-4 w-4" /> Clientes
-        </Link>
-        <Link
-          href="/plan"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted hover:bg-blue-500"
-          // activeProps={{
-          //   className: "bg-sidebar-accent text-sidebar-accent-foreground",
-          // }}
-        >
-          <Gauge className="h-4 w-4" /> Planos
-        </Link>
-        {MENU.map((s) => (
-          <div
-            key={s.id}
-            className="flex items-center gap-3 px-3 py-2 text-sm opacity-40 text-muted"
+        {MENU.map((menu) => (
+          <Link
+            key={menu.id}
+            href={menu.url}
+            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted ${pathname.includes(menu.url) ? "bg-blue-500" : ""} ${menu.active ? "" : "opacity-50"} hover:bg-blue-500`}
           >
-            <s.icon className="h-4 w-4" /> {s.label}
-            <span className="ml-auto text-[10px] uppercase tracking-wider">
-              em breve
-            </span>
-          </div>
+            <menu.icon className="h-4 w-4" /> {menu.label}
+            {!menu.active && (
+              <span className="ml-auto text-[10px] uppercase tracking-wider">
+                em breve
+              </span>
+            )}
+          </Link>
         ))}
       </nav>
+      {/* sAIR */}
       <div className="border-t border-sidebar-border p-3">
         <p className="truncate px-3 text-xs opacity-50 text-muted">
           {data?.user?.email}
         </p>
-
         <button
           onClick={signOut}
           className="mt-2 flex w-full items-center gap-3 rounded-md hover:cursor-pointer px-3 py-2 text-sm text-muted hover:bg-blue-500"
         >
           {loading ? (
             <>
-              <LogOut className="h-4 w-4" /> Saindo...
+              <Spinner /> Saindo...
             </>
           ) : (
             <>
-              <LogOut className="h-4 w-4" /> Sair
+              <LogOut /> Sair
             </>
           )}
         </button>

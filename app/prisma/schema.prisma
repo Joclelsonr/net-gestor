@@ -152,16 +152,40 @@ model Subscriptions {
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
-  plan     Plans    @relation(fields: [planId], references: [id])
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  plan     Plans      @relation(fields: [planId], references: [id])
+  customer Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  payments Payments[]
 
   @@map("subscriptions")
+}
+
+model Payments {
+  id            String        @id @default(uuid())
+  customerId    String
+  description   String?
+  amount        Float
+  dueDate       DateTime
+  paidDate      DateTime?
+  status        PaymentStatus @default(WAITING)
+  paymentMethod PaymentMethod @default(PIX)
+  notes         String?
+  createdBy     String?
+
+  subscriptionId String
+  subscription   Subscriptions @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
 }
 
 model Pppoe {
   id           String   @id @default(uuid())
   username     String
   hashPassword String
+  mac          String?
+  notes        String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -177,4 +201,21 @@ enum CustomerStatus {
   WAITING // aguardando
   SUSPENDED // suspenso
   CANCELED // cancelado
+}
+
+enum PaymentStatus {
+  PAID // pago
+  ONTIME // em dia
+  OVERDUE // atrasado
+  WAITING // aguardando
+  CANCELED // cancelado
+}
+
+enum PaymentMethod {
+  CREDIT_CARD // cartão de crédito
+  DEBIT_CARD // cartão de débito
+  CASH // dinheiro
+  PIX // pix
+  BANK_TRANSFER // transferência bancária
+  BANK_SLIP // boleto bancário
 }

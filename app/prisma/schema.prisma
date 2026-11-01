@@ -196,6 +196,56 @@ model Pppoe {
   @@map("pppoe")
 }
 
+model Devices {
+  id                   String         @id @default(uuid())
+  name                 String
+  host                 String
+  port                 Int            @default(80)
+  protocol             DeviceProtocol @default(HTTP)
+  location             String?
+  notes                String?
+  active               Boolean        @default(true)
+  status               DeviceStatus   @default(UNKNOWN)
+  consecutiveFailures  Int            @default(0) // Falhas consecutivas
+  consecutiveSuccesses Int            @default(0) // 
+  timeoutMs            Int            @default(500) // 
+  lastLatencyMs        Int? // Latência mais recente (ms)
+  lastError            String? // Último erro
+  createdBy            String?
+  lastCheckedAt        DateTime? //  Última verificação em
+  lastChangeAt         DateTime? // Última alteração em
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  deviceIncidents DeviceIncident[]
+
+  @@map("devices")
+}
+
+model DeviceIncident {
+  id           String    @id @default(uuid())
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  cause        String?
+  notifiedUp   Boolean   @default(false)
+  notifiedDown Boolean   @default(false)
+
+  deviceId String
+  device   Devices @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId, startedAt])
+  @@map("device_incidents")
+}
+
+model MonitorSetting {
+  id             String   @id @default(uuid())
+  telegramChatId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("monitor_settings")
+}
+
 enum CustomerStatus {
   ACTIVE // ativo
   WAITING // aguardando
@@ -218,4 +268,15 @@ enum PaymentMethod {
   PIX // pix
   BANK_TRANSFER // transferência bancária
   BANK_SLIP // boleto bancário
+}
+
+enum DeviceStatus {
+  ONLINE // online
+  OFFLINE //  offline
+  UNKNOWN // desconhecido
+}
+
+enum DeviceProtocol {
+  HTTP
+  HTTPS
 }

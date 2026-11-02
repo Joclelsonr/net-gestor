@@ -7,7 +7,7 @@ type ContactProps = { customer: Customer & { address: Address[] } };
 export function ContactSection({ customer }: ContactProps) {
   return (
     <div className="space-y-2 rounded-lg border bg-card p-5 text-sm">
-      <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-primary">
+      <h2 className="font-display text-sm font-semibold tracking-wider text-primary uppercase">
         Contato e endereço
       </h2>
       <p>

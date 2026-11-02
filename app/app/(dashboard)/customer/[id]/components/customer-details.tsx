@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { brl } from "@/lib/billing";
+import { formatDate } from "@/lib/br-docs";
 import { ArrowLeft } from "lucide-react";
 
 import { FormPlan } from "./form-plan";
@@ -35,7 +36,7 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
         <ArrowLeft className="h-4 w-4" /> Clientes
       </Link>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-semibold">{customer?.name}</h1>
+        <h1 className="text-2xl font-semibold md:text-3xl">{customer?.name}</h1>
         <Badge variant="outline" className={statusStyle[customer?.status]}>
           {statusTraduction[customer?.status]}
         </Badge>
@@ -81,14 +82,8 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
                   </span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Desde{" "}
-                  {new Date(subscription.createdAt).toLocaleDateString(
-                    "pt-BR",
-                    {
-                      timeZone: "America/Sao_Paulo",
-                    },
-                  )}{" "}
-                  · Vence todo dia {new Date(subscription.dueDate).getDate()}
+                  Desde {formatDate(subscription.createdAt)} · Vence todo dia{" "}
+                  {new Date(subscription.dueDate).getDate()}
                 </p>
               </div>
               <div className="text-right">
@@ -97,8 +92,7 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
                 </p>
                 {subscription.status === "ACTIVE" && (
                   <p className="text-xs text-muted-foreground">
-                    Próx. venc.:{" "}
-                    {new Date(subscription.dueDate).toLocaleDateString("pt-BR")}
+                    Próx. venc.: {formatDate(subscription.dueDate)}
                   </p>
                 )}
               </div>

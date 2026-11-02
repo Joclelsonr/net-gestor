@@ -5,7 +5,7 @@ import { FormNewClient } from "./components/form-new-client";
 
 export default function Page() {
   return (
-    <div className="mx-auto w-full p-6 md:p-10">
+    <div className="mx-auto w-full p-6 md:max-w-6xl md:p-10">
       <Link
         href="/customer"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"

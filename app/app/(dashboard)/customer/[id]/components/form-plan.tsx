@@ -22,8 +22,8 @@ import { subscriptionSchema } from "../schema";
 
 import { addPlan } from "../actions";
 
-import type { Plans } from "@/generated/prisma/client";
 import type { TSubscription } from "../schema";
+import type { Plans } from "@/generated/prisma/client";
 
 type FormPlanProps = { plans: Plans[]; customerId: string };
 
@@ -32,8 +32,8 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<TSubscription>(subscriptionSchema);
 
-  async function addSubscription(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function addSubscription(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     setLoading(true);
 
     const result = await addPlan({ ...form, customerId });
@@ -55,14 +55,13 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
 
   return (
     <>
-      <div className="mt-8 border-t flex pt-6 items-center justify-between">
-        <h2 className="text-xl font-semibold flex gap-2">
+      <div className="mt-8 flex items-center justify-between border-t pt-6">
+        <h2 className="flex gap-2 font-semibold md:text-xl">
           <Gauge />
           Planos contratados
         </h2>
         <Button
           size="lg"
-          disabled={plans.length > 0}
           onClick={() => setOpen((o) => !o)}
           className="bg-blue-500 hover:bg-blue-600"
         >
@@ -81,7 +80,6 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
             <Select
               value={form.planId}
               onValueChange={(value) => {
-                // const plan = plans.find((x) => x.id === value);
                 setForm({ ...form, planId: value ?? "" });
               }}
             >
@@ -126,7 +124,7 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
               value={form.dueDate}
               onValueChange={(v) => setForm({ ...form, dueDate: v ?? 10 })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full md:w-50">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -156,8 +154,8 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
                 setForm({ ...form, loyalty_months: v ?? "" })
               }
             >
-              <SelectTrigger>
-                <SelectValue />
+              <SelectTrigger className="w-full md:w-72">
+                <SelectValue placeholder="Selecione a fidelidade" />
               </SelectTrigger>
               <SelectContent>
                 {[0, 6, 12, 24].map((m) => (
@@ -172,7 +170,7 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
             <Button
               type="submit"
               disabled={loading}
-              className=" bg-blue-500 hover:bg-blue-600"
+              className="bg-blue-500 hover:bg-blue-600"
             >
               {loading ? <Spinner /> : <SaveCheck />}
               {loading ? "Salvando..." : "Vincular"}

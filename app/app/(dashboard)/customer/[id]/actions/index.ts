@@ -20,8 +20,8 @@ import type { TSubscription } from "../schema";
 export async function getCustomerById(
   id: string,
 ): Promise<Customer & { address: Address[]; subscriptions: Subscriptions[] }> {
-  const { user } = await getSession();
-  if (!user) return redirect("/login");
+  // const { user } = await getSession();
+  // if (!user) return redirect("/login");
 
   const customer = await prisma.customer.findUnique({
     where: { id },
@@ -56,6 +56,13 @@ export async function addPlan({
       return { success: false, message: "Plano não encontrado" };
     }
 
+    const subscription = await prisma.subscriptions.findFirst({
+      where: { customerId, planId },
+    });
+    if (subscription) {
+      return { success: false, message: "Cliente já possui este plano" };
+    }
+
     await prisma.subscriptions.create({
       data: {
         customerId,
@@ -76,12 +83,10 @@ export async function addPlan({
   }
 }
 
-export async function getPppooe(customerId: string): Promise<Pppoe> {
+export async function getPppooe(customerId: string): Promise<Pppoe | null> {
   const pppoe = await prisma.pppoe.findUnique({
     where: { customerId },
   });
-
-  if (!pppoe) return notFound();
 
   return pppoe;
 }

@@ -34,7 +34,7 @@ export function PhotoSection({ customer }: PhotoProps) {
 
   return (
     <div className="space-y-3 rounded-lg border bg-card p-5">
-      <h2 className="font-display text-sm font-semibold uppercase tracking-wider text-primary">
+      <h2 className="font-display text-sm font-semibold tracking-wider text-primary uppercase">
         Foto da residência
       </h2>
       {customer?.address?.map((address, index) => (
@@ -48,9 +48,9 @@ export function PhotoSection({ customer }: PhotoProps) {
               className="max-h-64 rounded-md border object-cover"
             />
           )}
-          <p className="text-muted-foreground text-sm ">
+          <p className="text-sm text-muted-foreground">
             Não consegue ver a imagem?{" "}
-            <Link href={address?.googleDriveUrl ?? ''} target="_blank">
+            <Link href={address?.googleDriveUrl ?? ""} target="_blank">
               {" "}
               <span className="underline">acesse aqui</span>
             </Link>

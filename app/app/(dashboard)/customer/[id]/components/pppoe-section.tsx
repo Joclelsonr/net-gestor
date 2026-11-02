@@ -66,7 +66,7 @@ export function PppoeSection({ pppoe, customerId }: PppoeProps) {
 
   return (
     <section className="mt-8 border-t pt-6">
-      <h2 className="flex items-center gap-2 text-xl font-semibold">
+      <h2 className="flex items-center gap-2 font-semibold md:text-xl">
         <Network className="h-5 w-5 text-primary" /> Acesso PPPoE
       </h2>
       <form
@@ -162,7 +162,7 @@ export function PppoeSection({ pppoe, customerId }: PppoeProps) {
         <Button
           size="lg"
           type="submit"
-          className="sm:col-start-2 sm:justify-self-end bg-blue-500 hover:bg-blue-600"
+          className="bg-blue-500 hover:bg-blue-600 sm:col-start-2 sm:justify-self-end"
           disabled={loading || !password}
         >
           {loading ? <Spinner /> : <Save />}

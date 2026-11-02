@@ -62,3 +62,8 @@ export function formatDateBRL(date: string, format?: "long" | "short"): string {
   });
   return newDate;
 }
+
+  export function formatDate(date?: Date | null) {
+    if (!date) return "—";
+    return date.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
+  }

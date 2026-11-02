@@ -79,13 +79,11 @@ export function SidebarContent() {
       <header className="flex h-14 shrink-0 items-center justify-between border-b bg-blue-950 px-4 md:hidden">
         <div className="flex items-center gap-2">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger className="grid h-9 w-9 place-items-center rounded-md hover:bg-blue-800">
-              <button
-                aria-label="Abrir menu"
-                className="grid h-9 w-9 place-items-center rounded-md hover:bg-blue-800"
-              >
-                <Menu className="text-muted" />
-              </button>
+            <SheetTrigger
+              aria-label="Abrir menu"
+              className="grid h-9 w-9 place-items-center rounded-md hover:bg-blue-800"
+            >
+              <Menu className="text-muted" />
             </SheetTrigger>
 
             <SheetContent

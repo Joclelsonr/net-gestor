@@ -28,7 +28,7 @@ export function SkeletonDetails() {
         </Card>
       </div>
       <div className="mt-4 space-y-3">
-        <Skeleton className="w-full h-32 " />
+        <Skeleton className="h-32 w-full" />
       </div>
     </>
   );

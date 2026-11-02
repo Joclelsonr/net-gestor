@@ -27,7 +27,6 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { InputPhoto } from "./input-photo";
-import { customerSchema } from "../schema";
 import { toast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +36,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { statusTraduction } from "@/constants/status-styled";
+import { customerSchema } from "../schema";
 
 import { createCustomer } from "../actions";
 
@@ -106,8 +106,8 @@ export function FormNewClient() {
     );
   }
 
-  async function submit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function submit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     setLoading(true);
 
     const result = await createCustomer(
@@ -136,7 +136,7 @@ export function FormNewClient() {
   return (
     <form onSubmit={submit} className="mt-8 space-y-8">
       <Section title="Identificação">
-        <Field>
+        <Field className="md:col-span-1">
           <Label>Tipo</Label>
           <Select
             value={form.personType}
@@ -151,7 +151,7 @@ export function FormNewClient() {
             </SelectContent>
           </Select>
         </Field>
-        <Field>
+        <Field className="md:col-span-2">
           <Label htmlFor="name">
             {personType ? "Nome completo" : "Razão social"}
           </Label>

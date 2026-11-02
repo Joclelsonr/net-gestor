@@ -125,8 +125,8 @@ export function CustomerPayments({
   return (
     <section className="mt-8 border-t pt-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-xl font-semibold">
-          <Wallet className="h-5 w-5 text-primary" /> Pagamentos do cliente
+        <h2 className="flex items-center gap-2 font-semibold md:text-xl">
+          <Wallet className="text-primary" /> Pagamentos do cliente
         </h2>
         <Button
           size="lg"
@@ -144,11 +144,11 @@ export function CustomerPayments({
           )}
         </Button>
       </div>
-      <dl className="mt-5 grid grid-cols-3 gap-3">
+      <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
         {totals.map(([label, total]) => (
           <div key={label}>
             <dt className="text-sm text-muted-foreground">{label}</dt>
-            <dd className="wrap-break-word text-lg font-semibold">
+            <dd className="text-lg font-semibold wrap-break-word">
               {brl(total)}
             </dd>
           </div>
@@ -200,7 +200,7 @@ export function CustomerPayments({
             size="lg"
             type="submit"
             disabled={loading}
-            className="sm:col-start-3 bg-blue-500 hover:bg-blue-600"
+            className="bg-blue-500 hover:bg-blue-600 sm:col-start-3"
           >
             {loading ? <Spinner /> : <Save />}
             {loading ? "Salvando..." : "Registrar cobrança"}
@@ -217,7 +217,7 @@ export function CustomerPayments({
           <div key={row.id} className="rounded-lg border bg-card p-4">
             <div className="flex flex-wrap items-center gap-4">
               <div className="min-w-0 flex-1">
-                <p className="wrap-break-word font-semibold">
+                <p className="font-semibold wrap-break-word">
                   {row.description}
                 </p>
                 <p className="text-sm text-muted-foreground">
@@ -272,7 +272,7 @@ export function CustomerPayments({
                   e.preventDefault();
                   update(row.id, "PAID", paidDate, form.paymentMethod);
                 }}
-                className="mt-4  grid items-end gap-3 md:flex md:items-center md:justify-between sm:grid-cols-3"
+                className="mt-4 grid items-end gap-3 sm:grid-cols-3 md:flex md:items-center md:justify-between"
               >
                 <div className="space-y-2">
                   <Label htmlFor="paid-date">Data do pagamento</Label>
@@ -313,7 +313,7 @@ export function CustomerPayments({
                   <Button
                     type="submit"
                     disabled={loading}
-                    className=" bg-blue-500 hover:bg-blue-600"
+                    className="bg-blue-500 hover:bg-blue-600"
                   >
                     Confirmar pagamento
                   </Button>

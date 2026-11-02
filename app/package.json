@@ -53,6 +53,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "neonctl": "^8.14.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^7.10.0",
     "tailwindcss": "^4",
     "typescript": "^5"

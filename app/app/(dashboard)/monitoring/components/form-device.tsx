@@ -74,7 +74,7 @@ export function FormDevice() {
           value={form.protocol}
           onValueChange={(value) => setForm({ ...form, protocol: value ?? "" })}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-full md:w-36">
             <SelectValue placeholder="Http">{form.protocol}</SelectValue>
           </SelectTrigger>
           <SelectContent>

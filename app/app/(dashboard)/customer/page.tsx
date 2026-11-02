@@ -10,7 +10,7 @@ export default async function Page() {
   const data = getClients();
 
   return (
-    <div className="mx-auto w-full p-6 md:p-10">
+    <div className="mx-auto w-full p-6 md:max-w-6xl md:p-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-medium uppercase tracking-widest text-primary">

@@ -60,16 +60,16 @@ export function FormTelegram() {
         Informe o ID do chat ou grupo que vai receber os avisos (envie uma
         mensagem ao bot e use o @userinfobot para descobrir o ID).
       </p>
-      <div className="mt-4 flex flex-wrap justify-between">
-        <div>
+      <div className="flex flex-wrap justify-between mt-4 gap-2">
+        <div className="w-full md:w-auto flex flex-col gap-2">
           <Input
-            className="max-w-lg"
+            // className="w-full md:max-w-lg"
             placeholder="-1001234567890"
             value={chatId}
             onChange={(e) => setChatId(e.target.value)}
           />
         </div>
-        <div className="flex gap-2">
+        <div className="w-full md:w-auto flex justify-between gap-2">
           <Button variant="outline" onClick={saveChat}>
             {loading ? "Salvando..." : "Salvar"}
           </Button>

@@ -21,7 +21,7 @@ services:
     environment:
       # NODE_ENV: development
       WATCHPACK_POLLING: "true"
-      # DATABASE_URL: postgres://postgres:postgres@db:5432/netgestor
+      DATABASE_URL: postgres://postgres:postgres@db:5432/netgestor
     command: npm run dev -- --hostname 0.0.0.0 --webpack
     init: true
     restart: unless-stopped

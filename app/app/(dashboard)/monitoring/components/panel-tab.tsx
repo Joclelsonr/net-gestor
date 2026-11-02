@@ -49,7 +49,7 @@ export async function PanelTab() {
           </div>
         ))}
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-1 md:grid-cols-2 lg:grid-cols-3">
         {devices
           .filter((device) => device.active)
           .map((device) => (

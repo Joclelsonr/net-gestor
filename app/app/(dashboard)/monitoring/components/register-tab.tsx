@@ -18,14 +18,17 @@ export async function RegisterTab() {
 
       <div className="w-full rounded-lg border bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b text-left text-xs uppercase bg-muted text-muted-foreground">
+          <thead className="w-full border-b text-left text-xs uppercase bg-muted text-muted-foreground">
             <tr>
               <th className="px-4 py-3 md:table-cell">Nome</th>
               <th className="px-4 py-3 md:table-cell">Endereço</th>
               <th className="px-4 py-3 md:table-cell">Local</th>
-              <th className="px-4 py-3 md:table-cell">Status</th>
-              <th className="px-4 py-3 md:table-cell">Monitorar</th>
-              <th className="px-4 py-3 md:table-cell"></th>
+              <th className="hidden px-4 py-3 md:table-cell text-center">
+                Status
+              </th>
+              <th className="hidden px-4 py-3 md:table-cell text-center">
+                Monitorar
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -33,12 +36,12 @@ export async function RegisterTab() {
               <tr key={device.id} className="border-b last:border-0">
                 <td className="p-3 font-medium">{device.name}</td>
                 <td className="p-3 text-muted-foreground">
-                  {device.protocol}://{device.host}:{device.port}
+                  {device.protocol.toLowerCase()}://{device.host}:{device.port}
                 </td>
                 <td className="p-3 text-muted-foreground">
                   {device.location ?? "—"}
                 </td>
-                <td className="p-3">
+                <td className="hidden p-3">
                   <Badge
                     // variant="outline"
                     className={statusStyle[device.status]}
@@ -46,10 +49,10 @@ export async function RegisterTab() {
                     {device.status}
                   </Badge>
                 </td>
-                <td className="p-3">
+                <td className="hidden text-center md:table-cell p-3">
                   <input type="checkbox" checked={device.active} />
                 </td>
-                <td className="p-3 text-right whitespace-nowrap">
+                <td className="hidden md:table-cell p-3 text-center whitespace-nowrap">
                   <Button size="sm" variant="ghost">
                     <Activity className="h-4 w-4" />
                   </Button>

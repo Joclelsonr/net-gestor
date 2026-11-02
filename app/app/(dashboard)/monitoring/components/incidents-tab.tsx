@@ -26,11 +26,15 @@ export async function IncidentsTab() {
           <thead className="border-b text-left text-xs uppercase text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Equipamento</th>
-              <th className="px-4 py-3">Caiu em</th>
-              <th className="px-4 py-3">Voltou em</th>
-              <th className="px-4 py-3">Duração</th>
-              <th className="px-4 py-3">Notificado</th>
-              <th className="px-4 py-3">Motivo</th>
+              <th className="px-4 py-3 text-center">Caiu em</th>
+              <th className="px-4 py-3 text-center">Voltou em</th>
+              <th className="px-4 py-3 text-center">Duração</th>
+              <th className="hidden md:table-cell px-4 py-3 text-center">
+                Notificado
+              </th>
+              <th className="hidden md:table-cell px-4 py-3 text-center">
+                Motivo
+              </th>
             </tr>
           </thead>
 
@@ -38,8 +42,8 @@ export async function IncidentsTab() {
             {incidents.map((incident) => (
               <tr key={incident.id} className="border-b last:border-0">
                 <td className="p-3 font-medium">{incident.device.name}</td>
-                <td className="p-3">{fmt(incident.startedAt)}</td>
-                <td className="p-3">
+                <td className="p-3 text-center">{fmt(incident.startedAt)}</td>
+                <td className="p-3 text-center">
                   {incident.endedAt ? (
                     fmt(incident.endedAt)
                   ) : (
@@ -51,7 +55,7 @@ export async function IncidentsTab() {
                     </Badge>
                   )}
                 </td>
-                <td className="p-3">
+                <td className="p-3 text-center">
                   {incident.endedAt
                     ? formatDuration(
                         incident.endedAt.getTime() -
@@ -59,10 +63,10 @@ export async function IncidentsTab() {
                       )
                     : "—"}
                 </td>
-                <td className="text-center">
+                <td className="hidden self-center text-center md:table-cell">
                   {incident.notifiedUp ? "Sim" : "Não"}
                 </td>
-                <td className="p-3 text-muted-foreground">
+                <td className="hidden p-3 text-center text-muted-foreground md:table-cell">
                   {incident.cause ?? "—"}
                 </td>
               </tr>

@@ -6,7 +6,7 @@ import { SkeletonPlans } from "./components/skeleton-plans";
 
 export default function Page() {
   return (
-    <div className="mx-auto w-full p-6 md:p-10">
+    <div className="mx-auto w-full p-6 md:max-w-6xl md:p-10">
       <PlanSection />
 
       <Suspense fallback={<SkeletonPlans />}>

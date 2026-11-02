@@ -22,9 +22,9 @@ export default function Page() {
         </Button>
       </div>
 
-      <div className="flex gap-4 w-full">
-        <Tabs defaultValue="panel" className="mt-6">
-          <TabsList className="space-x-3">
+      <div className="w-full flex justify-center gap-4">
+        <Tabs defaultValue="panel" className="w-full mt-6">
+          <TabsList className="w-full md:w-100 space-x-3 border">
             <TabsTrigger value="panel">Painel</TabsTrigger>
             <TabsTrigger value="register">Equipamentos</TabsTrigger>
             <TabsTrigger value="incident">Incidentes</TabsTrigger>

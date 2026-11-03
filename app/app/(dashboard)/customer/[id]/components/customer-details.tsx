@@ -69,6 +69,7 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
             (plan) => plan.id === subscription.planId,
           );
 
+
           return (
             <div
               key={subscription.id}
@@ -82,11 +83,11 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
                   </span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Desde {formatDate(subscription.createdAt)} · Vence todo dia{" "}
+                  Desde {formatDate(subscription.startDate)} · Vence todo dia{" "}
                   {new Date(subscription.dueDate).getDate()}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="md:text-right">
                 <p className="font-semibold text-primary">
                   {brl(Number(subscription.price))}
                 </p>

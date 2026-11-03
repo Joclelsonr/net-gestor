@@ -22,6 +22,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { createPayment, updatePayment } from "../actions";
 
 import type { Payments, PaymentStatus } from "@/generated/prisma/client";
+import { formatDate } from "@/lib/br-docs";
 
 type CustomerPaymentsProps = {
   payments: Payments[];
@@ -42,6 +43,7 @@ export function CustomerPayments({
     dueDate: new Date(),
     paymentMethod: "",
   });
+
 
   const today = new Date();
   const rows = payments ?? [];
@@ -222,9 +224,9 @@ export function CustomerPayments({
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Vencimento:{" "}
-                  {new Date(row.dueDate).toLocaleDateString("pt-BR")}
+                  {formatDate(row.dueDate)}
                   {row.paidDate
-                    ? ` · Pago em ${new Date(row.paidDate).toLocaleDateString("pt-BR")} · ${methodPayment.find((method) => method.value === row.paymentMethod)?.name ?? ""}`
+                    ? ` · Pago em ${formatDate(row.paidDate)} · ${methodPayment.find((method) => method.value === row.paymentMethod)?.name ?? ""}`
                     : ""}
                 </p>
               </div>
@@ -241,7 +243,7 @@ export function CustomerPayments({
                 </p>
               </div>
               {row.status === "WAITING" && (
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <Button
                     size="sm"
                     variant="outline"
@@ -251,7 +253,7 @@ export function CustomerPayments({
                       setPaidDate(new Date(today));
                     }}
                   >
-                    <Check className="h-4 w-4" /> Registrar pagamento
+                    <Check /> Pagamento
                   </Button>
                   <Button
                     size="icon"
@@ -261,7 +263,7 @@ export function CustomerPayments({
                     disabled={loading}
                     onClick={() => update(row.id, "CANCELED")}
                   >
-                    <Ban className="h-4 w-4" />
+                    <Ban  />
                   </Button>
                 </div>
               )}

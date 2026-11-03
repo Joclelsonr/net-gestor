@@ -63,7 +63,21 @@ export function formatDateBRL(date: string, format?: "long" | "short"): string {
   return newDate;
 }
 
-  export function formatDate(date?: Date | null) {
-    if (!date) return "—";
-    return date.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
+export function formatDate(date?: Date | null, showTime = false) {
+  if (!date) return "—";
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  };
+
+  if (showTime) {
+    options.hour = "2-digit";
+    options.minute = "2-digit";
+    options.second = "2-digit";
   }
+
+  return new Intl.DateTimeFormat("pt-BR", options).format(date);
+}

@@ -38,7 +38,10 @@ export async function getPlans(): Promise<Plans[]> {
 
   const plans = await prisma.plans.findMany();
 
-  return plans;
+  return plans.map((plan) => ({
+    ...plan,
+    price: Number(plan.price),
+  }));
 }
 
 export async function addPlan({
@@ -164,14 +167,12 @@ export async function createPayment(
 }
 
 export async function getPayments(customerId: string) {
-  const subscription = await prisma.subscriptions.findFirst({
-    where: { customerId },
-    select: { id: true },
-  });
 
   const payments = await prisma.payments.findMany({
-    where: { subscriptionId: subscription?.id },
+    where: { customerId },
   });
+
+  console.log("payments", payments);
 
   return payments;
 }

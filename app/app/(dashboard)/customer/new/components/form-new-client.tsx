@@ -26,7 +26,6 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { InputPhoto } from "./input-photo";
 import { toast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { InputPhoto } from "@/components/input-photo";
 import { statusTraduction } from "@/constants/status-styled";
 import { customerSchema } from "../schema";
 
@@ -43,7 +43,10 @@ import { createCustomer } from "../actions";
 import type { CustomerType, Key } from "../schema";
 
 const LocationMap = dynamic(
-  () => import("./location-map").then((mod) => mod.LocationMap),
+  () =>
+    import("@/components/location-map").then(
+      (mod) => mod.LocationMap,
+    ),
   {
     ssr: false,
     loading: () => <div className="h-80 w-full rounded-md border bg-muted" />,
@@ -408,7 +411,7 @@ export function FormNewClient() {
         </Field>
       </Section>
 
-      <div className="flex justify-between md:justify-end gap-3">
+      <div className="flex justify-between gap-3 md:justify-end">
         <Link href="/customer">
           <Button type="button" variant="outline" size="lg">
             <X />
@@ -419,7 +422,7 @@ export function FormNewClient() {
           size="lg"
           type="submit"
           disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 "
+          className="bg-blue-500 hover:bg-blue-600"
         >
           {loading ? <Spinner /> : <SaveCheck />}
           {loading ? "Salvando..." : "Salvar cliente"}
@@ -438,7 +441,7 @@ function Section({
 }) {
   return (
     <fieldset className="rounded-lg border bg-card p-6">
-      <legend className="px-2 font-display text-sm font-semibold uppercase tracking-wider text-primary">
+      <legend className="font-display px-2 text-sm font-semibold tracking-wider text-primary uppercase">
         {title}
       </legend>
       <div className="grid gap-4 md:grid-cols-3">{children}</div>

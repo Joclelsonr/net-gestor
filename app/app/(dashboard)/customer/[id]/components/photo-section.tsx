@@ -6,11 +6,11 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { InputPhoto } from "../../new/components/input-photo";
+import { InputPhoto } from "@/components/input-photo";
 
 import type { Address, Customer } from "@/generated/prisma/client";
 
-type PhotoProps = { customer: Customer & { address: Address[] } };
+type PhotoProps = { customer: (Customer & { address: Address[] }) | null };
 
 export function PhotoSection({ customer }: PhotoProps) {
   const [newPhoto, setNewPhoto] = useState<File | null>(null);

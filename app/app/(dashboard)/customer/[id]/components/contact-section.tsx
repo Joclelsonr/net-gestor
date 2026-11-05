@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { Customer, Address } from "@/generated/prisma/client";
 
-type ContactProps = { customer: Customer & { address: Address[] } };
+type ContactProps = { customer: (Customer & { address: Address[] }) | null };
 
 export function ContactSection({ customer }: ContactProps) {
   return (
@@ -12,14 +12,14 @@ export function ContactSection({ customer }: ContactProps) {
       </h2>
       <p>
         <span className="text-muted-foreground">Telefone:</span>{" "}
-        {customer.phone}
+        {customer?.phone}
       </p>
       <p>
         <span className="text-muted-foreground">WhatsApp:</span>
-        {customer.whatsapp}
+        {customer?.whatsapp}
       </p>
       <p>
-        <span className="text-muted-foreground">E-mail:</span> {customer.email}
+        <span className="text-muted-foreground">E-mail:</span> {customer?.email}
       </p>
       {customer?.address?.map((address, index) => (
         <div key={address.id ?? index} className="space-y-2">

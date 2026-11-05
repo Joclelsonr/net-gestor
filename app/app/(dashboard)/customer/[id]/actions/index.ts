@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { notFound, redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { nextDueDate } from "@/lib/billing";
 import { getSession } from "@/utils/get-session";
@@ -9,7 +8,7 @@ import { decryptPassword, encryptPassword } from "@/lib/crypto";
 import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
 
 import {
-  type Plans,
+  // type Plans,
   type Pppoe,
   type Address,
   type Customer,
@@ -19,29 +18,26 @@ import type { TSubscription } from "../schema";
 
 export async function getCustomerById(
   id: string,
-): Promise<Customer & { address: Address[]; subscriptions: Subscriptions[] }> {
-  // const { user } = await getSession();
-  // if (!user) return redirect("/login");
+): Promise<
+  (Customer & { address: Address[]; subscriptions: Subscriptions[] }) | null
+> {
+  await getSession();
 
   const customer = await prisma.customer.findUnique({
     where: { id },
     include: { address: true, subscriptions: true },
   });
 
-  if (!customer) notFound();
-
   return customer;
 }
 
-export async function getPlans(): Promise<Plans[]> {
+export async function getPlans() {
+  await getSession();
   // await new Promise((resolve) => setTimeout(resolve, 10000));
 
   const plans = await prisma.plans.findMany();
 
-  return plans.map((plan) => ({
-    ...plan,
-    price: Number(plan.price),
-  }));
+  return plans;
 }
 
 export async function addPlan({
@@ -51,7 +47,6 @@ export async function addPlan({
   dueDate,
 }: TSubscription) {
   const { user } = await getSession();
-  if (!user) return redirect("/login");
 
   try {
     const plan = await prisma.plans.findUnique({ where: { id: planId } });
@@ -65,6 +60,21 @@ export async function addPlan({
     if (subscription) {
       return { success: false, message: "Cliente já possui este plano" };
     }
+
+    // atualização de plano
+    // if (subscription && subscription.planId !== planId) {
+    //   console.log("atualização de plano", subscription, planId);
+    //   await prisma.subscriptions.update({
+    //     where: { id: subscription.id },
+    //     data: {
+    //       planId: plan.id,
+    //       price: plan.price,
+    //       startDate: new Date(startDate),
+    //       dueDate: nextDueDate(dueDate),
+    //     },
+    //   });
+    //   return { success: true, message: "Plano atualizado com sucesso" };
+    // }
 
     await prisma.subscriptions.create({
       data: {
@@ -87,6 +97,8 @@ export async function addPlan({
 }
 
 export async function getPppooe(customerId: string): Promise<Pppoe | null> {
+  await getSession();
+
   const pppoe = await prisma.pppoe.findUnique({
     where: { customerId },
   });
@@ -99,6 +111,8 @@ export async function createPppoe(
   username: string,
   password: string,
 ) {
+  await getSession();
+
   const hashPassword = encryptPassword(password);
 
   try {
@@ -120,6 +134,8 @@ export async function createPppoe(
 }
 
 export async function revealPassword(customerId: string) {
+  await getSession();
+
   const pppoeHashPassword = await prisma.pppoe.findUnique({
     where: { customerId },
     select: { hashPassword: true },
@@ -138,6 +154,8 @@ export async function createPayment(
   amount: string,
   dueDate: Date,
 ) {
+  await getSession();
+
   try {
     const subscription = await prisma.subscriptions.findFirst({
       where: { customerId },
@@ -167,12 +185,11 @@ export async function createPayment(
 }
 
 export async function getPayments(customerId: string) {
+  await getSession();
 
   const payments = await prisma.payments.findMany({
     where: { customerId },
   });
-
-  console.log("payments", payments);
 
   return payments;
 }
@@ -183,6 +200,8 @@ export async function updatePayment(
   paidDate?: Date,
   paymentMethod?: string,
 ) {
+  await getSession();
+
   try {
     await prisma.payments.update({
       where: { id: paymentId },

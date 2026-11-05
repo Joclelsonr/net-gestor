@@ -2,12 +2,13 @@ import Link from "next/link";
 
 import { brl } from "@/lib/billing";
 import { formatDate } from "@/lib/br-docs";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 
 import { FormPlan } from "./form-plan";
 import { Badge } from "@/components/ui/badge";
 import { PhotoSection } from "./photo-section";
 import { PppoeSection } from "./pppoe-section";
+import { Button } from "@/components/ui/button";
 import { ContactSection } from "./contact-section";
 import { CustomerPayments } from "./customer-payments";
 
@@ -29,16 +30,28 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
 
   return (
     <div>
-      <Link
-        href="/customer"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" /> Clientes
-      </Link>
+      <div className="flex items-center justify-between gap-2">
+        <Link
+          href="/customer"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft /> Clientes
+        </Link>
+        <Link href={`/customer/${customer?.id}/edit`}>
+          <Button size="lg" className="bg-blue-500 hover:bg-blue-600">
+            <div className="ml-auto flex items-center gap-2">
+              <Pencil /> Editar
+            </div>
+          </Button>
+        </Link>
+      </div>
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold md:text-3xl">{customer?.name}</h1>
-        <Badge variant="outline" className={statusStyle[customer?.status]}>
-          {statusTraduction[customer?.status]}
+        <Badge
+          variant="outline"
+          className={statusStyle[customer?.status ?? "WAITING"]}
+        >
+          {statusTraduction[customer?.status ?? "WAITING"]}
         </Badge>
       </div>
       <p className="font-mono text-xs text-muted-foreground">
@@ -52,11 +65,11 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
         <PhotoSection customer={customer} />
       </div>
 
-      <PppoeSection pppoe={pppoe} customerId={customer?.id} />
+      <PppoeSection pppoe={pppoe} customerId={customer?.id ?? ""} />
 
-      <CustomerPayments payments={payments} customerId={customer?.id} />
+      <CustomerPayments payments={payments} customerId={customer?.id ?? ""} />
 
-      <FormPlan plans={plans} customerId={customer?.id} />
+      <FormPlan plans={plans} customerId={customer?.id ?? ""} />
 
       <div className="mt-4 space-y-3">
         {customer?.subscriptions && !customer?.subscriptions.length && (
@@ -68,7 +81,6 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
           const planActive = plans.find(
             (plan) => plan.id === subscription.planId,
           );
-
 
           return (
             <div

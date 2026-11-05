@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
+    && npm install -g pnpm \
     && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3000

@@ -3,7 +3,7 @@ export const customerSchema = {
   name: "",
   cpf: "",
   rg: "",
-  birthDate: "",
+  birthDate: '',
 
   email: "",
   phone: "",

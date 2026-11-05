@@ -54,28 +54,38 @@ export async function addPlan({
       return { success: false, message: "Plano não encontrado" };
     }
 
+    // Busca a assinatura atual do cliente
     const subscription = await prisma.subscriptions.findFirst({
-      where: { customerId, planId },
+      where: { customerId },
     });
-    if (subscription) {
-      return { success: false, message: "Cliente já possui este plano" };
+
+    // Cliente já possui este plano
+    if (subscription && subscription.planId === planId) {
+      return {
+        success: false,
+        message: "Cliente já possui este plano",
+      };
     }
 
-    // atualização de plano
-    // if (subscription && subscription.planId !== planId) {
-    //   console.log("atualização de plano", subscription, planId);
-    //   await prisma.subscriptions.update({
-    //     where: { id: subscription.id },
-    //     data: {
-    //       planId: plan.id,
-    //       price: plan.price,
-    //       startDate: new Date(startDate),
-    //       dueDate: nextDueDate(dueDate),
-    //     },
-    //   });
-    //   return { success: true, message: "Plano atualizado com sucesso" };
-    // }
+    // Cliente possui outro plano -> atualiza
+    if (subscription) {
+      await prisma.subscriptions.update({
+        where: { id: subscription.id },
+        data: {
+          plan: { connect: { id: plan.id } },
+          price: plan.price,
+          startDate: new Date(startDate),
+          dueDate: nextDueDate(dueDate),
+          createdBy: user.id,
+        },
+      });
 
+      revalidatePath(`/customer/${customerId}`);
+
+      return { success: true, message: "Plano atualizado com sucesso" };
+    }
+
+    // Cliente não possui plano -> cria
     await prisma.subscriptions.create({
       data: {
         customerId,
@@ -91,7 +101,7 @@ export async function addPlan({
 
     return { success: true, message: "Plano adicionado ao cliente" };
   } catch (error) {
-    console.log(error);
+    console.error("Erro ao adicionar/atualizar plano:", error);
     return { success: false, message: "Algo deu errado, tente novamente" };
   }
 }

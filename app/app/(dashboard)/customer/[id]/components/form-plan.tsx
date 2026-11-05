@@ -43,14 +43,14 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
         description: result.message,
       });
       setForm(subscriptionSchema);
-      setLoading(false);
+      setOpen(false);
     } else {
       toast.add({
         type: "error",
         description: result.message,
       });
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   return (
@@ -128,7 +128,7 @@ export function FormPlan({ plans, customerId }: FormPlanProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {[5, 10, 15, 20, 25].map((day) => (
+                {[5, 10, 15, 20, 25, 30].map((day) => (
                   <SelectItem key={day} value={String(day)}>
                     Dia {day}
                   </SelectItem>

@@ -76,7 +76,7 @@ export async function addPlan({
           price: plan.price,
           startDate: new Date(startDate),
           dueDate: nextDueDate(dueDate),
-          createdBy: user.id,
+          createdBy: user ? user.id : '',
         },
       });
 
@@ -93,7 +93,7 @@ export async function addPlan({
         price: plan.price,
         startDate: new Date(startDate),
         dueDate: nextDueDate(dueDate),
-        createdBy: user.id,
+        createdBy: user ? user.id : '',
       },
     });
 

@@ -144,7 +144,7 @@ model Subscriptions {
   id         String         @id @default(uuid())
   customerId String
   planId     String
-  price      Decimal
+  price      Float
   startDate  DateTime
   dueDate    DateTime
   status     CustomerStatus @default(ACTIVE)
@@ -246,6 +246,48 @@ model MonitorSetting {
   @@map("monitor_settings")
 }
 
+model Inventory {
+  id           String            @id @default(uuid())
+  name         String
+  category     InventoryCategory
+  brand        String?
+  model        String?
+  mac          String?
+  serial       String?
+  quantity     Int               @default(0)
+  unit         String?
+  minimumStock Int               @default(0)
+  location     String?
+  status       InventoryStatus   @default(AVAILABLE)
+  customerId   String?
+  notes        String?
+  createdBy    String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  inventoryMovements InventoryEvents[]
+
+  @@map("inventory")
+}
+
+model InventoryEvents {
+  id            String             @id @default(uuid())
+  kind          InventoryEventKind
+  quantityDelta Int                @default(0)
+  changes       Json?
+  reason        String?
+  notes         String?
+  customerId    String?
+  customerName  String?
+  createdBy     String?
+  createdAt     DateTime           @default(now())
+  inventoryId   String
+  inventory     Inventory          @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryId, createdAt])
+  @@map("inventory_events")
+}
+
 enum CustomerStatus {
   ACTIVE // ativo
   WAITING // aguardando
@@ -279,4 +321,34 @@ enum DeviceStatus {
 enum DeviceProtocol {
   HTTP
   HTTPS
+}
+
+enum InventoryCategory {
+  ROUTER // roteador
+  EQUIPAMENT // equipamento
+  MATERIAL // material
+}
+
+enum InventoryEventKind {
+  REGISTER // cadastro
+  ENTRY
+  ASSIGN
+  RETURN
+  TRANSFER
+  MAINTENANCE
+  MAINTENANCE_RETURN
+  DAMAGE
+  LOSS
+  CONSUMPTION // 
+  ADJUSTMENT
+  UPDATE // atualizar
+}
+
+enum InventoryStatus {
+  AVAILABLE // disponível
+  ASSIGNED // usando
+  RESERVED // reservado
+  MAINTENANCE // manutenção
+  DAMAGED // danificado
+  LOST // perdido
 }

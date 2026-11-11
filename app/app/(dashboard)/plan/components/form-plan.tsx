@@ -14,7 +14,9 @@ import { createPlan } from "../actions";
 
 import type { TPlan } from "../schema";
 
-export function FormPlan() {
+type FormPlanProps = { onClose: () => void };
+
+export function FormPlan({ onClose }: FormPlanProps) {
   const [form, setForm] = useState<TPlan>(planSchema);
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +31,7 @@ export function FormPlan() {
         description: result.message,
       });
       setLoading(false);
+      onClose();
     } else {
       toast.add({
         type: "error",

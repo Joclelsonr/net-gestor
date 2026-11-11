@@ -13,7 +13,7 @@ export function PlanSection() {
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-primary">
+          <p className="text-xs font-medium tracking-widest text-primary uppercase">
             Catálogo
           </p>
 
@@ -30,7 +30,7 @@ export function PlanSection() {
         </Button>
       </div>
 
-      {open && <FormPlan />}
+      {open && <FormPlan onClose={() => setOpen(false)} />}
     </>
   );
 }

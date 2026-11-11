@@ -4,11 +4,17 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { nextDueDate } from "@/lib/billing";
 import { getSession } from "@/utils/get-session";
+import { padronizarMac } from "@/lib/inventory-rules";
 import { decryptPassword, encryptPassword } from "@/lib/crypto";
-import { PaymentMethod, PaymentStatus } from "@/generated/prisma/client";
+import {
+  PaymentStatus,
+  PaymentMethod,
+  InventoryStatus,
+  InventoryEventKind,
+} from "@/generated/prisma/client";
 
 import {
-  // type Plans,
+  type Plans,
   type Pppoe,
   type Address,
   type Customer,
@@ -31,7 +37,7 @@ export async function getCustomerById(
   return customer;
 }
 
-export async function getPlans() {
+export async function getPlans(): Promise<Plans[]> {
   await getSession();
   // await new Promise((resolve) => setTimeout(resolve, 10000));
 
@@ -76,7 +82,7 @@ export async function addPlan({
           price: plan.price,
           startDate: new Date(startDate),
           dueDate: nextDueDate(dueDate),
-          createdBy: user ? user.id : '',
+          createdBy: user ? user.id : "",
         },
       });
 
@@ -93,7 +99,7 @@ export async function addPlan({
         price: plan.price,
         startDate: new Date(startDate),
         dueDate: nextDueDate(dueDate),
-        createdBy: user ? user.id : '',
+        createdBy: user ? user.id : "",
       },
     });
 
@@ -102,7 +108,13 @@ export async function addPlan({
     return { success: true, message: "Plano adicionado ao cliente" };
   } catch (error) {
     console.error("Erro ao adicionar/atualizar plano:", error);
-    return { success: false, message: "Algo deu errado, tente novamente" };
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Erro ao adicionar/atualizar plano.",
+    };
   }
 }
 
@@ -138,8 +150,14 @@ export async function createPppoe(
 
     return { success: true, message: "Usuário e senha criado com sucesso!" };
   } catch (error) {
-    console.log(error);
-    return { success: false, message: "Algo deu errado, tente novamente" };
+    console.error("[CREATE PPPOE]", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Erro ao criar/atualizar usuário e senha.",
+    };
   }
 }
 
@@ -189,8 +207,14 @@ export async function createPayment(
 
     return { success: true, message: "Pagamento criado com sucesso!" };
   } catch (error) {
-    console.log(error);
-    return { success: false, message: "Algo deu errado, tente novamente" };
+    console.error("[CREATE PAYMENT]", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível criar o pagamento.",
+    };
   }
 }
 
@@ -226,7 +250,202 @@ export async function updatePayment(
 
     return { success: true, message: "Pagamento atualizado com sucesso!" };
   } catch (error) {
-    console.log(error);
-    return { success: false, message: "Algo deu errado, tente novamente" };
+    console.error("[UPDADE PAYMENT]", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível atualizar o pagamento.",
+    };
+  }
+}
+
+export async function getInventoryCustomerById(customerId: string) {
+  const inventoryCustomer = await prisma.inventory.findMany({
+    where: { customerId },
+  });
+
+  return inventoryCustomer;
+}
+
+export async function linkCustomerEquipment(customerId: string, mac: string) {
+  try {
+    const normalizedMac = padronizarMac(mac);
+
+    if (!customerId || !normalizedMac) {
+      return {
+        success: false,
+        message: "Informe o cliente e o MAC do roteador.",
+      };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const matches = await tx.inventory.findMany({
+        where: {
+          mac: normalizedMac,
+          category: "ROUTER",
+        },
+        take: 2,
+      });
+
+      if (matches.length === 0) {
+        throw new Error("Nenhum roteador encontrado com esse MAC.");
+      }
+
+      if (matches.length > 1) {
+        throw new Error(
+          "Existe mais de um roteador com esse MAC. Verifique o estoque.",
+        );
+      }
+
+      const inventory = matches[0];
+
+      if (inventory.customerId) {
+        throw new Error("Esse roteador já está vinculado a um cliente.");
+      }
+
+      if (inventory.status !== InventoryStatus.AVAILABLE) {
+        throw new Error("Esse roteador não está disponível para vínculo.");
+      }
+
+      // Condição repetida na atualização para proteger contra
+      // duas tentativas simultâneas de vincular o mesmo roteador.
+      const result = await tx.inventory.updateMany({
+        where: {
+          id: inventory.id,
+          customerId: null,
+          status: InventoryStatus.AVAILABLE,
+        },
+        data: {
+          customerId,
+          status: InventoryStatus.ASSIGNED,
+        },
+      });
+
+      if (result.count === 0) {
+        throw new Error("O roteador não está mais disponível para vínculo.");
+      }
+
+      await tx.inventoryEvents.create({
+        data: {
+          inventoryId: inventory.id,
+          kind: InventoryEventKind.ASSIGN,
+          quantityDelta: 0,
+          changes: {
+            fields: ["customerId", "status"],
+            before: {
+              customerId: inventory.customerId,
+              status: inventory.status,
+            },
+            after: {
+              customerId,
+              status: InventoryStatus.ASSIGNED,
+            },
+          },
+        },
+      });
+    });
+
+    // revalidatePath("/stock");
+    revalidatePath(`/customer/${customerId}`);
+
+    return {
+      success: true,
+      message: "Roteador vinculado ao cliente com sucesso!",
+    };
+  } catch (error) {
+    console.error("[LINK CUSTOMER EQUIPMENT]", error);
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível vincular o roteador.",
+    };
+  }
+}
+
+export async function unlinkCustomerEquipment(
+  customerId: string,
+  inventoryId: string,
+) {
+  try {
+    if (!customerId || !inventoryId) {
+      return {
+        success: false,
+        message: "Dados do cliente ou equipamento inválidos.",
+      };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const inventory = await tx.inventory.findFirst({
+        where: {
+          id: inventoryId,
+          customerId,
+          category: "ROUTER",
+        },
+      });
+
+      if (!inventory) {
+        throw new Error("Esse roteador não está vinculado a este cliente.");
+      }
+
+      const result = await tx.inventory.updateMany({
+        where: {
+          id: inventoryId,
+          customerId,
+          status: InventoryStatus.ASSIGNED,
+        },
+        data: {
+          customerId: null,
+          status: InventoryStatus.AVAILABLE,
+        },
+      });
+
+      if (result.count === 0) {
+        throw new Error(
+          "Não foi possível devolver o roteador. Atualize a página e tente novamente.",
+        );
+      }
+
+      await tx.inventoryEvents.create({
+        data: {
+          inventoryId,
+          kind: InventoryEventKind.RETURN,
+          quantityDelta: 0,
+          changes: {
+            fields: ["customerId", "status"],
+            before: {
+              customerId: inventory.customerId,
+              status: inventory.status,
+            },
+            after: {
+              customerId: null,
+              status: InventoryStatus.AVAILABLE,
+            },
+          },
+        },
+      });
+    });
+
+    // revalidatePath("/stock");
+    revalidatePath(`/customer/${customerId}`);
+
+    return {
+      success: true,
+      message: "Roteador devolvido ao estoque com sucesso!",
+    };
+  } catch (error) {
+    console.error("[UNLINK CUSTOMER EQUIPMENT]", error);
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível devolver o roteador.",
+    };
   }
 }

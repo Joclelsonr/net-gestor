@@ -1,11 +1,4 @@
-import {
-  Users,
-  Wrench,
-  Activity,
-  Gauge,
-  FileText,
-  Receipt,
-} from "lucide-react";
+import { Users, Wrench, Activity, Gauge, Receipt, Package } from "lucide-react";
 
 export const MENU = [
   { id: 1, label: "Clientes", url: "/customer", icon: Users, active: true },
@@ -19,14 +12,13 @@ export const MENU = [
   },
   {
     id: 4,
-    label: "Suporte",
-    // url: "/support",
-    url: "#",
-    icon: Wrench,
-    active: false,
+    label: "Estoque",
+    url: "/stock",
+    icon: Package,
+    active: true,
   },
   {
-    id: 6,
+    id: 5,
     label: "Financeiro",
     // url: "/finance",
     url: "#",
@@ -34,11 +26,11 @@ export const MENU = [
     active: false,
   },
   {
-    id: 5,
-    label: "Contratos",
-    // url: "/contract",
+    id: 6,
+    label: "Suporte",
+    // url: "/support",
     url: "#",
-    icon: FileText,
+    icon: Wrench,
     active: false,
   },
 ];

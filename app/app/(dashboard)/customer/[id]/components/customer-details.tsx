@@ -11,21 +11,29 @@ import { PppoeSection } from "./pppoe-section";
 import { Button } from "@/components/ui/button";
 import { ContactSection } from "./contact-section";
 import { CustomerPayments } from "./customer-payments";
+import { CustomerEquipment } from "./customer-equipament";
 
 import { statusStyle, statusTraduction } from "@/constants/status-styled";
 
-import { getCustomerById, getPayments, getPlans, getPppooe } from "../actions";
+import {
+  getPlans,
+  getPppooe,
+  getPayments,
+  getCustomerById,
+  getInventoryCustomerById,
+} from "../actions";
 
 type CustomerDetailsProps = { params: Promise<{ id: string }> };
 
 export async function CustomerDetails({ params }: CustomerDetailsProps) {
   const { id } = await params;
 
-  const [customer, pppoe, plans, payments] = await Promise.all([
+  const [customer, pppoe, plans, payments, inventorys] = await Promise.all([
     getCustomerById(id),
     getPppooe(id),
     getPlans(),
     getPayments(id),
+    getInventoryCustomerById(id),
   ]);
 
   return (
@@ -66,6 +74,11 @@ export async function CustomerDetails({ params }: CustomerDetailsProps) {
       </div>
 
       <PppoeSection pppoe={pppoe} customerId={customer?.id ?? ""} />
+
+      <CustomerEquipment
+        inventorys={inventorys}
+        customerId={customer?.id ?? ""}
+      />
 
       <CustomerPayments payments={payments} customerId={customer?.id ?? ""} />
 

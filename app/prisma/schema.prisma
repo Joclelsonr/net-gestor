@@ -180,6 +180,22 @@ model Payments {
   @@map("payments")
 }
 
+model Expenses {
+  id            String          @id @default(uuid())
+  description   String
+  category      ExpenseCategory
+  amount        Float
+  dueDate       DateTime
+  paidDate      DateTime?
+  status        PaymentStatus   @default(ONTIME)
+  paymentMethod PaymentMethod   @default(CREDIT_CARD)
+  createdBy     String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("expenses")
+}
+
 model Pppoe {
   id           String   @id @default(uuid())
   username     String
@@ -310,6 +326,16 @@ enum PaymentMethod {
   PIX // pix
   BANK_TRANSFER // transferência bancária
   BANK_SLIP // boleto bancário
+}
+
+enum ExpenseCategory {
+  LINK // 
+  ENERGY // energia
+  TEAM // equipe
+  EQUIPAMENT // equipamentos
+  INFRASTRUCTURE // infraestrutura
+  TAXES // impostos
+  OTHERS // outros
 }
 
 enum DeviceStatus {

@@ -9,3 +9,11 @@ export function paymentState(
   if (payment.status === PaymentStatus.CANCELED) return "Cancelado";
   return payment.dueDate < today ? "Atrasado" : "Pendente";
 }
+
+// 11/11/2026, 23:45
+export const today = new Date().toLocaleDateString("pt-BR", {
+  timeZone: "America/Sao_Paulo",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});

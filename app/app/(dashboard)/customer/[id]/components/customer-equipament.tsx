@@ -56,28 +56,6 @@ export function CustomerEquipment({
     setLoading(false);
   }
 
-  // async function unlink(id: string) {
-  //   setLoading(true);
-
-  //   if(!isOpenAlert) return
-
-  //   const result = await unlinkCustomerEquipment(customerId, id);
-  //   if (result.success) {
-  // setIsOpenAlert(false);
-  // setSelectedEquipment(null);
-  //     toast.add({
-  //       type: "success",
-  //       description: result.message,
-  //     });
-  //   } else {
-  //     toast.add({
-  //       type: "error",
-  //       description: result.message,
-  //     });
-  //   }
-  //   setLoading(true);
-  // }
-
   function unlink(id: string) {
     setSelectedEquipment(id);
     setIsOpenAlert(true);
@@ -93,12 +71,10 @@ export function CustomerEquipment({
         customerId,
         selectedEquipment,
       );
-
       toast.add({
         type: result.success ? "success" : "error",
         description: result.message,
       });
-
       if (result.success) {
         setIsOpenAlert(false);
         setSelectedEquipment(null);
@@ -116,7 +92,7 @@ export function CustomerEquipment({
   return (
     <section className="mt-8 border-t pt-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-xl font-semibold">
+        <h2 className="flex items-center gap-2 font-semibold md:text-xl">
           <Router className="text-primary" />
           Equipamentos do cliente
         </h2>

@@ -50,7 +50,7 @@ export function PhotoSection({ customer }: PhotoProps) {
         <div key={address.id ?? index}>
           {address.imageKey && !newPhoto && (
             <Image
-              width={250}
+              width={350}
               height={200}
               unoptimized
               alt="Residência do cliente"

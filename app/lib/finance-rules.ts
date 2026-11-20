@@ -60,17 +60,17 @@ export function financeSummary(
 }
 
 export function monthRange(date: Date = new Date()) {
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth();
-  const start = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
-  const end = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999));
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const start = new Date(year, month, 1, 0, 0, 0, 0);
+  const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
   return { start, end };
 }
 
 export function yearRange(date: Date = new Date()) {
   const year = date.getUTCFullYear();
-  const start = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0));
-  const end = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
+  const start = new Date(year, 0, 1, 0, 0, 0, 0);
+  const end = new Date(year, 11, 31, 23, 59, 59, 999);
   return { start, end };
 }
 

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { getSession } from "@/utils/get-session";
-import { uploadImage } from "@/lib/google-drive";
+import { uploadImage } from "@/lib/upload-image";
 import { CustomerStatus } from "@/generated/prisma/enums";
 
 import type { CustomerType } from "../schema";
@@ -14,7 +14,7 @@ export async function createCustomer(data: CustomerType, file?: File) {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      const createCustomer = await tx.customer.create({
+      const customer = await tx.customer.create({
         data: {
           userId: user.id,
           personType: data.personType,
@@ -30,9 +30,9 @@ export async function createCustomer(data: CustomerType, file?: File) {
         },
       });
 
-      const createAddress = await tx.address.create({
+      const address = await tx.address.create({
         data: {
-          customerId: createCustomer.id,
+          customerId: customer.id,
           cep: data.cep,
           street: data.street,
           number: data.number,
@@ -45,23 +45,40 @@ export async function createCustomer(data: CustomerType, file?: File) {
         },
       });
 
-      return { addressId: createAddress.id };
+      return {
+        customerId: customer.id,
+        addressId: address.id,
+      };
     });
 
     if (file) {
-      const upload = await uploadImage(file, result.addressId);
-      await prisma.address.update({
-        where: { id: result.addressId },
-        data: {
-          googleDriveId: upload.id,
-          googleDriveUrl: upload.webViewLink,
-        },
-      });
+      try {
+        const upload = await uploadImage(file, result.addressId);
+
+        await prisma.address.update({
+          where: { id: result.addressId },
+          data: { imageKey: upload.key },
+        });
+      } catch (error) {
+        console.error("[UPLOAD CUSTOMER ADDRESS PHOTO]", error);
+        return {
+          success: true,
+          message:
+            "Cliente criado com sucesso, mas não foi possível salvar a foto da residência.",
+        };
+      }
     }
 
-    return { success: true, message: "Cliente criado com sucesso!" };
+    return {
+      success: true,
+      message: "Cliente criado com sucesso!",
+    };
   } catch (error) {
-    console.log(error);
-    return { success: false, message: "Algo deu errado, tente novamente" };
+    console.error("[CREATE CUSTOMER]", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Erro ao criar cliente.",
+    };
   }
 }

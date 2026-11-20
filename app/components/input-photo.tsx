@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useEffect, useMemo } from "react";
 import { Camera, ImagePlus, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export function InputPhoto({
   file,
@@ -60,8 +60,8 @@ export function InputPhoto({
         <div className="relative inline-block">
           <Image
             src={url}
-            width={150}
-            height={150}
+            width={250}
+            height={200}
             alt="Foto da residência"
             className="max-h-64 rounded-md border object-cover"
           />

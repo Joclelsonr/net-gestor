@@ -1,9 +1,11 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { storage } from "@/lib/storage";
 import { revalidatePath } from "next/cache";
 import { nextDueDate } from "@/lib/billing";
 import { getSession } from "@/utils/get-session";
+import { uploadImage } from "@/lib/upload-image";
 import { padronizarMac } from "@/lib/inventory-rules";
 import { decryptPassword, encryptPassword } from "@/lib/crypto";
 import {
@@ -446,6 +448,59 @@ export async function unlinkCustomerEquipment(
         error instanceof Error
           ? error.message
           : "Não foi possível devolver o roteador.",
+    };
+  }
+}
+
+export async function updateCustomerAddressPhoto(
+  file: File,
+  addressId: string,
+  customerId: string,
+) {
+  const { user } = await getSession();
+  if (!user) {
+    return { success: false, message: "Não autorizado." };
+  }
+
+  try {
+    const address = await prisma.address.findFirst({
+      where: { id: addressId },
+      select: { id: true, imageKey: true },
+    });
+    if (!address) {
+      return { success: false, message: "Endereço não encontrado." };
+    }
+
+    const upload = await uploadImage(file, address.id);
+
+    await prisma.address.update({
+      where: { id: address.id },
+      data: { imageKey: upload.key },
+    });
+
+    // Exclui a foto anterior, se existir
+    if (address.imageKey) {
+      try {
+        await storage.delete(address.imageKey);
+      } catch (error) {
+        console.error("[DELETE OLD ADDRESS PHOTO]", error);
+      }
+    }
+
+    revalidatePath(`/customer/${customerId}`);
+
+    return {
+      success: true,
+      message: "Foto da residência atualizada com sucesso!",
+    };
+  } catch (error) {
+    console.error("[UPDATE CUSTOMER ADDRESS PHOTO]", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível atualizar a foto.",
     };
   }
 }

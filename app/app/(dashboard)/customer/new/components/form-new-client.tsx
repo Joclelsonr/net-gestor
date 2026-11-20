@@ -43,10 +43,7 @@ import { createCustomer } from "../actions";
 import type { CustomerType, Key } from "../schema";
 
 const LocationMap = dynamic(
-  () =>
-    import("@/components/location-map").then(
-      (mod) => mod.LocationMap,
-    ),
+  () => import("@/components/location-map").then((mod) => mod.LocationMap),
   {
     ssr: false,
     loading: () => <div className="h-80 w-full rounded-md border bg-muted" />,
@@ -124,7 +121,6 @@ export function FormNewClient() {
 
     if (result.success) {
       toast.add({ type: "success", description: result.message });
-      setLoading(false);
       setForm(customerSchema);
       setPhoto(null);
     } else {
@@ -132,8 +128,8 @@ export function FormNewClient() {
         type: "error",
         description: result.message,
       });
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   return (

@@ -114,6 +114,7 @@ model Address {
   lng            String? // longetude
   googleDriveId  String? // ID foto no google drive
   googleDriveUrl String? // link de vizualização
+  imageKey       String? // key da imagem no neon
 
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)

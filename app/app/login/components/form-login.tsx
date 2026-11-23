@@ -58,7 +58,7 @@ export function FormLogin() {
           },
           onSuccess: (ctx) => {
             setLoading(false);
-            router.push("/customer");
+            router.push("/finance");
           },
           onError: (ctx) => {
             if (ctx.error.code === "INVALID_EMAIL_OR_PASSWORD") {

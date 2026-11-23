@@ -1,13 +1,15 @@
 import { Suspense } from "react";
 
-import { Table } from "./components/table";
+// import { Table } from "./components/table";
 import { SkeletonTable } from "./components/skeleton-table";
 import { ButtonNewCustomer } from "./components/button-new-customer";
+import { CustomerDataTable } from "./components/customer-datatable";
+import { customerColumns } from "./components/customer-columns";
 
 import { getClients } from "./actions";
 
 export default async function Page() {
-  const data = getClients();
+  const data = await getClients();
 
   return (
     <div className="mx-auto w-full p-6 md:max-w-6xl md:p-10">
@@ -23,7 +25,8 @@ export default async function Page() {
       </div>
 
       <Suspense fallback={<SkeletonTable />}>
-        <Table data={data} />
+        {/* <Table data={data} /> */}
+        <CustomerDataTable data={data} columns={customerColumns} />
       </Suspense>
     </div>
   );
